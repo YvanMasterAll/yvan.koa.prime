@@ -1,0 +1,30 @@
+{
+  "name": "zzcloud",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "node build/dev-server",
+    "dev": "nodemon build/dev-server",
+    "prd": "pm2 start build/dev-server",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "koa": "^2.7.0",
+    "koa-bodyparser": "^4.2.1",
+    "koa-json": "^2.0.2",
+    "koa-logger": "^3.2.0",
+    "koa-onerror": "^4.1.0",
+    "koa-router": "^7.4.0",
+    "koa-static": "^5.0.0",
+    "moment": "^2.24.0",
+    "pg": "^7.11.0",
+    "pg-hstore": "^2.3.3",
+    "sequelize": "^5.8.7"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.1",
+    "babel-core": "^6.26.3",
+    "babel-preset-es2015-node5": "^1.2.0",
+    "babel-preset-stage-3": "^6.24.1"
+  }
+}
