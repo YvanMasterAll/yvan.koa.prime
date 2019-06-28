@@ -95,14 +95,26 @@ class RecordDao {
             }],
             offset: v.page * v.limit,
             limit: v.limit,
-            raw: true
+            //raw: true
         })
         records = records.map ( record => {
-            record.test = "test"
+            record.dataValues.test = "test"
             return record
         })
 
         return records
+
+        // let records = await User.findAll({
+        //     include: [{
+        //         model: Book,
+        //         required: true
+        //     }],
+        //     offset: v.page * v.limit,
+        //     limit: v.limit,
+        //     raw: true
+        // })
+
+        // return records
     }
 }
 

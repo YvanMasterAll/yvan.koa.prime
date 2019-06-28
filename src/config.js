@@ -6,7 +6,7 @@ module.exports = {
     sys: {
         api_server_type: 'http://',     //API服务器协议类型,包含"http://"或"https://"
         api_server_host: 'localhost',   //API服务器暴露的域名地址,请勿添加"http://"
-        api_server_port: '3000',        //API服务器监听的端口号
+        api_server_port: '3001',        //API服务器监听的端口号
         http_server_type: 'http://',    //HTTP服务器协议类型,包含"http://"或"https://"
         http_server_host: 'www.XXX.com',//HTTP服务器地址,请勿添加"http://" （即前端调用使用的服务器地址，如果是APP请设置为 * ）
         http_server_port: '65534',      //HTTP服务器端口号
