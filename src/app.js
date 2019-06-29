@@ -14,6 +14,7 @@ import { init } from './utils/base'
 
 const app = new Koa()
 const env = process.env.NODE_ENV || 'development'
+const server = require('http').Server(app.callback())
 
 const publicKey = fs.readFileSync(path.join(__dirname, '../publicKey.pub'))
 
@@ -31,7 +32,7 @@ global.config = config
 //middlewares
 app.use((ctx, next) => {
     if (ctx.request.header.host.split(':')[0] === 'localhost' || ctx.request.header.host.split(':')[0] === '127.0.0.1') {
-        ctx.set('Access-Control-Allow-Origin', '*')
+        ctx.set('Access-Control-Allow-Origin', 'http://localhost:4444')
     } else {
         ctx.set('Access-Control-Allow-Origin', config.sys.http_server_host)
     }
@@ -47,9 +48,9 @@ app.use((ctx, next) => {
 .use(json())
 .use(logger())
 .use(errorcatch())
+.use(errorroutes())
 .use(KoaStatic('assets', path.resolve(__dirname, '../assets')))
 .use(mainroutes.routes(), mainroutes.allowedMethods())
-.use(errorroutes())
 
 //logger
 if (env === 'development') { 
@@ -65,10 +66,32 @@ if (env === 'development') {
 //error handling
 app.on('error', (err, ctx) => {
     console.error('server error', err, ctx)
-});
+})
 
-app.listen(config.sys.api_server_port)
+// app.listen(config.sys.api_server_port)
+// console.log('Now start API server on port ' + config.sys.api_server_port + '...')
+server.listen(config.sys.api_server_port, () => {
+    console.log(`app run at : http://localhost:${config.sys.api_server_port}`);
+})
 
-console.log('Now start API server on port ' + config.sys.api_server_port + '...')
+//socket
+// const io = require('socket.io')(server)
+// io.on('connection', socket => {
+//     console.log('初始化成功！下面可以用socket绑定事件和触发事件了');
+//     socket.on('send', data => {
+//          console.log('客户端发送的内容：', data);
+//          socket.emit('getMsg', '我是返回的消息... ...');
+//     })
+
+//     setTimeout( () => {
+//         socket.emit('getMsg', '我是初始化3s后的返回消息... ...') 
+//     }, 3000)
+
+//     socket.send('来自服务端的消息')
+
+//     socket.on('message', data => {
+//         console.log('客户端发送的内容：', data);
+//     })
+// })
 
 export default app
