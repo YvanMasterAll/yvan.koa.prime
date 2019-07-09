@@ -1,7 +1,7 @@
 const moment = require('moment');
 const {sequelize} = require('../utils/db')
 const {Sequelize, Model} = require('sequelize')
-import User from './user'
+import Student from './student'
 import Book from './book'
 
 /// 借书记录
@@ -14,26 +14,31 @@ Record.init({
         primaryKey: true,
         autoIncrement: true
     },
-    //用户标识
-    userid: Sequelize.INTEGER,
-    //书籍标识
+    // 学生标识
+    stuid: Sequelize.INTEGER,
+    // 书籍标识
     bookid: Sequelize.INTEGER
 }, {
     sequelize,
     tableName: 'record'
 })
 
-Record.belongsTo(User, {foreignKey: 'userid', constraints: false})
+// https://itbilu.com/nodejs/npm/41qaV3czb.html //Sequelize 中文API文档－3. 模型（表）之间的关系/关联
+// belongsTo: 一对一
+// hasMany: 一对多
+// belongsToMany: 多对多
+
+Record.belongsTo(Student, {foreignKey: 'stuid', constraints: false})
 Record.belongsTo(Book, {foreignKey: 'bookid', constraints: false})
 // >>>
 // "data": [
 //     {
 //         "id": 1,
-//         "userid": 1,
+//         "stuid": 1,
 //         "bookid": 1,
 //         "created_at": "2019-06-26T23:53:19.089Z",
 //         "updated_at": "2019-06-26T23:53:19.089Z",
-//         "User": {
+//         "Student": {
 //             "id": 1,
 //             "name": "vi",
 //             "created_at": "2019-06-26T23:53:12.767Z",
@@ -49,8 +54,8 @@ Record.belongsTo(Book, {foreignKey: 'bookid', constraints: false})
 //     }
 // ]
 
-// Book.belongsToMany(User, {through: 'user_book', foreignKey: 'bookid'})
-// User.belongsToMany(Book, {through: 'user_book', foreignKey: 'userid'})
+// Book.belongsToMany(Student, {through: 'stu_book', foreignKey: 'bookid'})
+// Student.belongsToMany(Book, {through: 'stu_book', foreignKey: 'stuid'})
 // >>>
 // {
 //     "code": 200,
@@ -65,10 +70,10 @@ Record.belongsTo(Book, {foreignKey: 'bookid', constraints: false})
 //             "Books.name": "葵花宝典",
 //             "Books.created_at": "2019-06-26T23:53:15.395Z",
 //             "Books.updated_at": "2019-06-26T23:53:15.395Z",
-//             "Books.user_book.created_at": "2019-06-26T23:53:46.000Z",
-//             "Books.user_book.updated_at": "2019-06-26T23:53:42.000Z",
-//             "Books.user_book.bookid": 1,
-//             "Books.user_book.userid": 1
+//             "Books.stu_book.created_at": "2019-06-26T23:53:46.000Z",
+//             "Books.stu_book.updated_at": "2019-06-26T23:53:42.000Z",
+//             "Books.stu_book.bookid": 1,
+//             "Books.stu_book.stuid": 1
 //         },
 //         {
 //             "id": 1,
@@ -79,10 +84,10 @@ Record.belongsTo(Book, {foreignKey: 'bookid', constraints: false})
 //             "Books.name": "1",
 //             "Books.created_at": "2019-06-26T23:54:21.000Z",
 //             "Books.updated_at": "2019-06-26T23:54:28.000Z",
-//             "Books.user_book.created_at": "2019-06-26T23:54:08.000Z",
-//             "Books.user_book.updated_at": "2019-06-26T23:54:31.000Z",
-//             "Books.user_book.bookid": 2,
-//             "Books.user_book.userid": 1
+//             "Books.stu_book.created_at": "2019-06-26T23:54:08.000Z",
+//             "Books.stu_book.updated_at": "2019-06-26T23:54:31.000Z",
+//             "Books.stu_book.bookid": 2,
+//             "Books.stu_book.stuid": 1
 //         }
 //     ]
 // }

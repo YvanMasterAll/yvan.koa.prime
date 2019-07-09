@@ -1,40 +1,40 @@
 const {Sequelize, Op} = require('sequelize')
-import User from '../models/user'
+import Student from '../models/student'
 import Book from '../models/book'
 import Record from '../models/record'
 
 class RecordDao {
 
-    /// 添加用户
-    static async user_add(v) {
+    /// 添加学生
+    static async student_add(v) {
         let name = v.params.name
         if (!name) {
             throw new global.errs.ParamsIllegal()
         }
 
-        let user = new User()
-        user.name = name
+        let student = new Student()
+        student.name = name
 
-        await user.save()
+        await student.save()
     }
 
-     /// 删除用户
-     static async user_del(v) {
+     /// 删除学生
+     static async student_del(v) {
         let name = v.params.name
         if (!name) {
             throw new global.errs.ParamsIllegal()
         }
 
-        let user = await User.findOne({
+        let student = await Student.findOne({
             where: {
                 name: name
             }
         })
-        if (!user) {
-            throw new global.errs.NotFound("没有找到该用户")
+        if (!student) {
+            throw new global.errs.NotFound("没有找到该学生")
         }
 
-        await user.destory()
+        await student.destory()
     }
 
     /// 添加书籍
@@ -69,15 +69,15 @@ class RecordDao {
         await book.destory()
     }
 
-    /// 用户借书
+    /// 学生借书
     static async book_borrow(v) {
-        let userid = v.params.userid
+        let stuid = v.params.stuid
         let bookid = v.params.bookid
-        if (!userid || !bookid) {
+        if (!stuid || !bookid) {
             throw new global.errs.ParamsIllegal()
         }
         let record = new Record()
-        record.userid = userid
+        record.stuid = stuid
         record.bookid = bookid
 
         await record.save()
@@ -87,7 +87,7 @@ class RecordDao {
     static async record_list(v) {
         let records = await Record.findAll({
             include: [{
-                model: User,
+                model: Student,
                 required: true
             }, {
                 model: Book,
@@ -95,7 +95,7 @@ class RecordDao {
             }],
             offset: v.page * v.limit,
             limit: v.limit,
-            //raw: true
+            // raw: true
         })
         records = records.map ( record => {
             record.dataValues.test = "test"
@@ -104,7 +104,7 @@ class RecordDao {
 
         return records
 
-        // let records = await User.findAll({
+        // let records = await Student.findAll({
         //     include: [{
         //         model: Book,
         //         required: true

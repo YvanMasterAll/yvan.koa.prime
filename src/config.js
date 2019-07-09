@@ -1,6 +1,9 @@
 import path from 'path'
+import fs from 'fs'
 
 /// 项目配置
+
+const publicKey = fs.readFileSync(path.join(__dirname, '../publicKey.pub'))
 
 module.exports = {
     sys: {
@@ -13,7 +16,7 @@ module.exports = {
         system_country: 'zh-cn',        //所在国家的国家代码
         system_plugin_path: path.join(__dirname, './plugins'), //插件路径
         session_key: 'RESTfulAPI',      //生产环境务必随机设置一个值
-        db_type: 'postgres'           //数据库类型
+        db_type: 'postgres'             //数据库类型
     },
     db: {
         host: 'localhost',              //服务器地址
@@ -24,6 +27,8 @@ module.exports = {
         prefix: ''                      //表前缀, 如"api_"
     },
     app: {
-        limit: 10                       //分页大小
+        limit: 10,                      //分页大小
+        secretkey: publicKey,           //jwt盐
+        expiresIn: '2h'                 //token时效
     }
 }

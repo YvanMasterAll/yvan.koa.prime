@@ -61,6 +61,51 @@ class DBError extends iError {
     }
 }
 
+class Exists extends iError {
+    constructor(msg) {
+        super()
+
+        this.code = 407
+        this.msg = msg || '数据已存在'
+    }
+}
+
+class PasswordWrong extends iError {
+    constructor(msg) {
+        super()
+
+        this.code = 408
+        this.msg = msg || '密码错误'
+    }
+}
+
+class UserRoleUnMatch extends iError {
+    constructor(msg) {
+        super()
+
+        this.code = 409
+        this.msg = msg || '用户角色不匹配'
+    }
+}
+
+class NoPermission extends iError {
+    constructor(msg) {
+        super()
+
+        this.code = 410
+        this.msg = msg || '没有权限'
+    }
+}
+
+class TokenError extends iError {
+    constructor(msg) {
+        super()
+
+        this.code = 411
+        this.msg = msg || 'token令牌异常'
+    }
+}
+
 class Unknown extends iError {
     constructor(msg) {
         super()
@@ -78,5 +123,10 @@ module.exports = {
     Unknown,
     ServerError,
     NotFound404,
-    DBError
+    DBError,
+    Exists,
+    PasswordWrong,
+    UserRoleUnMatch,
+    NoPermission,
+    TokenError
 }

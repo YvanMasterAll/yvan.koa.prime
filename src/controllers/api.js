@@ -9,8 +9,8 @@ export const Get = (ctx, next) => {
 }
 
 export const Post = async (ctx, next) => {
-    //yTest
-    //throw new global.errs.AuthFailed
+    // yTest
+    // throw new global.errs.AuthFailed
     ctx.body = {
         result: 'post',
         name: ctx.params.name,

@@ -1,17 +1,17 @@
 import RecordDao from '../dao/record'
 
-/// 添加用户
-export const user_add = async (ctx, next) => {
-    await RecordDao.user_add(ctx)
+/// 添加学生
+export const student_add = async (ctx, next) => {
+    await RecordDao.student_add(ctx)
 
-    ctx.resolve.success.bind(ctx)("成功添加用户")
+    ctx.resolve.success.bind(ctx)("成功添加学生")
 }
 
-/// 删除用户
-export const user_del = async (ctx, next) => {
-    await RecordDao.user_del(ctx)
+/// 删除学生
+export const student_del = async (ctx, next) => {
+    await RecordDao.student_del(ctx)
 
-    ctx.resolve.success.bind(ctx)("成功删除用户")
+    ctx.resolve.success.bind(ctx)("成功删除学生")
 }
 
 /// 添加书籍
@@ -28,7 +28,7 @@ export const book_del = async (ctx, next) => {
     ctx.resolve.success.bind(ctx)("成功删除书籍")
 }
 
-/// 用户借书
+/// 学生借书
 export const book_borrow = async (ctx, next) => {
     await RecordDao.book_borrow(ctx)
 

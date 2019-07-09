@@ -1,35 +1,34 @@
 import Koa from 'koa'
+const koaJwt = require('koa-jwt')
 import KoaStatic from 'koa-static'
 import onerror from 'koa-onerror'
 import logger from 'koa-logger'
 import json from 'koa-json'
 import bodyparser from 'koa-bodyparser'
-import fs from 'fs'
 import path from 'path'
 import config from './config'
 import errorcatch from './middleware/errorcatch'
 import errorroutes from './middleware/errorroutes'
+import { _permissions } from './middleware/permissions'
 import mainroutes from './routes/main'
-import { init } from './utils/base'
+import init from './utils/init'
 
 const app = new Koa()
 const env = process.env.NODE_ENV || 'development'
 const server = require('http').Server(app.callback())
 
-const publicKey = fs.readFileSync(path.join(__dirname, '../publicKey.pub'))
-
-//initialize
+// initialize
 init()
 
-//error handler
+// error handler
 onerror(app)
 
-//global objects
+// global objects
 const errors = require('./utils/errors')
 global.errs = errors
 global.config = config
 
-//middlewares
+// middlewares
 app.use((ctx, next) => {
     if (ctx.request.header.host.split(':')[0] === 'localhost' || ctx.request.header.host.split(':')[0] === '127.0.0.1') {
         ctx.set('Access-Control-Allow-Origin', 'http://localhost:4444')
@@ -49,10 +48,20 @@ app.use((ctx, next) => {
 .use(logger())
 .use(errorcatch())
 .use(errorroutes())
+.use(_permissions())
 .use(KoaStatic('assets', path.resolve(__dirname, '../assets')))
 .use(mainroutes.routes(), mainroutes.allowedMethods())
+.use(koaJwt({
+    secret: global.config.app.secretkey
+}).unless({
+    path: [
+        /^\/api\/auth\/signin/,
+        /^\/api\/auth\/signup/,
+        /^((?!\/api).)*$/ // 设置除了私有接口外的其它资源, 可以不需要认证访问
+    ]
+}))
 
-//logger
+// logger
 if (env === 'development') { 
     app.use((ctx, next) => {
         const start = new Date()
@@ -63,7 +72,7 @@ if (env === 'development') {
     })
 }
 
-//error handling
+// error handling
 app.on('error', (err, ctx) => {
     console.error('server error', err, ctx)
 })
@@ -74,7 +83,7 @@ server.listen(config.sys.api_server_port, () => {
     console.log(`app run at : http://localhost:${config.sys.api_server_port}`);
 })
 
-//socket
+// // socket
 // const io = require('socket.io')(server)
 // io.on('connection', socket => {
 //     console.log('初始化成功！下面可以用socket绑定事件和触发事件了');

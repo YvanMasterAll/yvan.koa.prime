@@ -21,7 +21,7 @@ const sequelize = new Sequelize(
     }
 )
 
-sequelize.sync({ force: false }) //自动创建表
+sequelize.sync({ force: true }) //自动创建表
 
 module.exports = {
     sequelize

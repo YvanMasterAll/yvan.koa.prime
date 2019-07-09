@@ -1,9 +1,13 @@
 import book from './book'
-import user from './user'
+import student from './student'
 import record from './record'
+import user from './user'
+import role from './role'
 
 export default {
     book,
+    student,
+    record,
     user,
-    record
+    role
 }
