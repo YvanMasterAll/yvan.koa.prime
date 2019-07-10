@@ -1,7 +1,7 @@
 import User from '../models/user'
 import Role from '../models/role'
 import Users_Roles from '../models/users_roles'
-import { getToken } from '../utils'
+import { getToken, getJWTPayload } from '../utils'
 import { roles } from '../middleware/permissions'
 const UUID = require('uuid')
 
@@ -14,16 +14,16 @@ export const signin = async (ctx, next) => {
         throw new global.errs.ParamsIllegal()
     }
 
-    let _user = await User.findOne({
+    let user = await User.findOne({
         where: {
             name: name
         }
     })
-    if (!_user) {
+    if (!user) {
         throw new global.errs.NotFound('用户不存在')
     }
 
-    let user = await User.findOne({
+    user = await User.findOne({
         where: {
             name: name,
             password: password
@@ -47,18 +47,30 @@ export const signin = async (ctx, next) => {
         throw new global.errs.UserRoleNoMatch('用户角色不匹配')
     }
 
+    let role = userRole.dataValues.Roles[0].dataValues
+    delete role.Users_Roles
+
     const token = getToken(
         {
             id: user.id,
             name: name,
-            roleid: userRole.dataValues.Roles[0].id
+            roleid: role.id
         }
     )
+    
+    let _user = userRole.dataValues
+    delete _user.password
+    delete _user.Roles
+    _user.role = role
+    let _role = roles.filter(r => r.id === role.id)[0]
+    _user.perms = _role.perms.map(r => r.id)
+    let _token = getJWTPayload('Bearer ' + token)
+    _user.token = _token
 
-    ctx.header.authorization = 'Bearer ' + token
-    ctx.set('Authorization', `Bearer ${token}`)
+    // ctx.header.authorization = 'Bearer ' + token
+    // ctx.set('Authorization', `Bearer ${token}`)
                         
-    ctx.resolve.success.bind(ctx)(token)
+    ctx.resolve.json.bind(ctx)(_user, token)
 }
 
 /// 注册
@@ -71,20 +83,21 @@ export const signup = async (ctx, next) => {
         throw new global.errs.ParamsIllegal()
     }
 
-    if (!(roleid in roles.map(r => r.id))) {
+    let role = roles.filter(r => r.id === roleid*1)[0]
+    if (!role) {
         throw new global.errs.ParamsIllegal()
     }
 
-    let _user = await User.findOne({
+    let user = await User.findOne({
         where: {
             name: name
         }
     })
-    if (_user) {
+    if (user) {
         throw new global.errs.Exists('用户已存在')
     }
 
-    let user = new User()
+    user = new User()
     let userid = UUID.v1()
     user.id = userid
     user.name = name
@@ -105,10 +118,18 @@ export const signup = async (ctx, next) => {
         }
     )
 
-    ctx.header.authorization = 'Bearer ' + token
-    ctx.set('Authorization', `Bearer ${token}`)
+    let _user = Object.assign({}, user.dataValues)
+    delete _user.password
+    _user.role = Object.assign({}, role)
+    _user.perms = role.perms.map(r => r.id)
+    delete _user.role.perms
+    let _token = getJWTPayload('Bearer ' + token)
+    _user.token = _token
 
-    ctx.resolve.success.bind(ctx)(token)
+    // ctx.header.authorization = 'Bearer ' + token
+    // ctx.set('Authorization', `Bearer ${token}`)
+
+    ctx.resolve.json.bind(ctx)(_user, token)
 }
 
 export const check = async (ctx, next) => {

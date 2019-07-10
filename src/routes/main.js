@@ -9,7 +9,7 @@ const routes = [
     {
         method: 'post',
         path: '/api/student/add/:name',
-        perm: [101, 102],
+        perm: [102],
         control: controllers.record.student_add
     },
     {

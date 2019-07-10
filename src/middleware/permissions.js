@@ -88,9 +88,10 @@ const _permissions = function () {
                     throw new global.errs.UserRoleUnMatch()
                 }
                 user.role = role
-                ctx.state.user = user
+                ctx.state._user = user
             } catch (error) { 
-                throw error
+                console.log(error)
+                // throw error
                 // TODO: 判断错误类型是否为超时, 根据情况决定是否刷新token
             }
         }
@@ -102,7 +103,7 @@ const _permissions = function () {
 /// 权限验证
 const permissionCheck = function (include) {
     return async (ctx, next) => {
-        const { role } = ctx.state.user
+        const { role } = ctx.state._user
         let perms = role.perms.map(r => r.id)
         let pass = true
         include.forEach(p => {

@@ -35,7 +35,7 @@ app.use((ctx, next) => {
     } else {
         ctx.set('Access-Control-Allow-Origin', config.sys.http_server_host)
     }
-    ctx.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
+    ctx.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
     ctx.set('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS')
     ctx.set('Access-Control-Allow-Credentials', true) //允许带上cookie
 
@@ -50,7 +50,6 @@ app.use((ctx, next) => {
 .use(errorroutes())
 .use(_permissions())
 .use(KoaStatic('assets', path.resolve(__dirname, '../assets')))
-.use(mainroutes.routes(), mainroutes.allowedMethods())
 .use(koaJwt({
     secret: global.config.app.secretkey
 }).unless({
@@ -60,6 +59,7 @@ app.use((ctx, next) => {
         /^((?!\/api).)*$/ // 设置除了私有接口外的其它资源, 可以不需要认证访问
     ]
 }))
+.use(mainroutes.routes(), mainroutes.allowedMethods())
 
 // logger
 if (env === 'development') { 
