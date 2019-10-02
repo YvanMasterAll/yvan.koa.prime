@@ -9,15 +9,40 @@ class User extends Model {}
 User.init(
     {
         id: {
-            type: Sequelize.UUID,
-            primaryKey: true
+            type: Sequelize.INTEGER,
+            autoIncrement: true,
+            primaryKey: true,
+            comment: 'ID'
         },
-        pid: Sequelize.UUID, // 上级id
         name: {
             type: Sequelize.STRING,
-            unique: true
+            commit: '名称'
         },
-        password: Sequelize.STRING
+        password: {
+            type: Sequelize.STRING,
+            commit: '密码'
+        },
+        avatar: {
+            type: Sequelize.STRING,
+            commit: '头像',
+            defaultValue: global.config.db.avatar
+        },
+        email: {
+            type: Sequelize.STRING,
+            commit: '邮箱'
+        },
+        phone: {
+            type: Sequelize.STRING,
+            commit: '电话号码'
+        },
+        dept_id: {
+            type: Sequelize.INTEGER,
+            comment: '部门ID'
+        },
+        job_id: {
+            type: Sequelize.INTEGER,
+            comment: '岗位ID'
+        }
     },
     {
         sequelize,

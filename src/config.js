@@ -5,7 +5,7 @@ import fs from 'fs'
 
 const publicKey = fs.readFileSync(path.join(__dirname, '../publicKey.pub'))
 
-module.exports = {
+const config = {
     sys: {
         api_server_type: 'http://',     //API服务器协议类型,包含"http://"或"https://"
         api_server_host: 'localhost',   //API服务器暴露的域名地址,请勿添加"http://"
@@ -23,12 +23,20 @@ module.exports = {
         port: 5432,                     //数据库端口号
         username: 'zzcloud',            //数据库用户名
         password: 'zzcloud',            //数据库密码
-        database: 'zzcloud',            //数据库名称
-        prefix: ''                      //表前缀, 如"api_"
+        database: 'zzcloud2',           //数据库名称
+        prefix: '',                     //表前缀, 如"api_"
+        avatar: 'https://source.unsplash.com/zBmcEepz5FQ/256x256' //默认头像
     },
     app: {
         limit: 10,                      //分页大小
         secretkey: publicKey,           //jwt盐
-        expiresIn: '2h'                 //token时效
+        expiresIn: '2h',                //token时效'
     }
 }
+
+// global objects
+global.config = config
+const errors = require('./utils/errors')
+global.errs = errors
+
+export default config

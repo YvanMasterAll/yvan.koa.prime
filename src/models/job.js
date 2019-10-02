@@ -1,11 +1,12 @@
 const { sequelize } = require('../utils/db')
 const { Sequelize, Model } = require('sequelize')
+import Dept from './dept'
 
-/// 角色
+/// 岗位
 
-class Role extends Model {}
+class Job extends Model {}
 
-Role.init(
+Job.init(
     {
         id: {
             type: Sequelize.INTEGER,
@@ -15,20 +16,16 @@ Role.init(
         },
         name: {
             type: Sequelize.STRING,
-            unique: true,
             comment: '名称'
         },
-        remark: {
-            type: Sequelize.STRING,
-            comment: '备注'
-        },
-        scope: {
-            type: Sequelize.STRING,
-            comment: '权限范围'
-        },
-        level: {
+        sort: {
             type: Sequelize.INTEGER,
-            comment: '级别'
+            comment: '排序',
+            defaultValue: 999
+        },
+        dept_id: {
+            type: Sequelize.INTEGER, 
+            comment: '所属部门'
         },
         state: {
             type: Sequelize.STRING,
@@ -38,8 +35,10 @@ Role.init(
     },
     {
         sequelize,
-        tableName: 'role'
+        tableName: 'job'
     }
 )
-    
-export default Role
+
+Job.belongsTo(Dept, {foreignKey: 'bookid', constraints: false})
+
+export default Job

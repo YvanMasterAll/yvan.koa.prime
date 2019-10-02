@@ -1,7 +1,7 @@
 import { iError } from '../utils/errors'
 import resolve from '../utils/resolve'
 import { BaseError } from 'sequelize'
-import { setpage } from '../utils'
+import utils from '../utils'
 import { JsonWebTokenError } from 'jsonwebtoken'
 
 module.exports = function () {
@@ -9,7 +9,7 @@ module.exports = function () {
         // 为请求上下文添加结果处理函数
         ctx.resolve = resolve
         // 计算分页数据
-        setpage(ctx)
+        utils.setpage(ctx)
 
         return next().catch((err) => {
             if (err instanceof iError) {

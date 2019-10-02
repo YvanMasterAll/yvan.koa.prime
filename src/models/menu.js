@@ -1,11 +1,11 @@
 const { sequelize } = require('../utils/db')
 const { Sequelize, Model } = require('sequelize')
 
-/// 角色
+/// 菜单
 
-class Role extends Model {}
+class Menu extends Model {}
 
-Role.init(
+Menu.init(
     {
         id: {
             type: Sequelize.INTEGER,
@@ -15,20 +15,20 @@ Role.init(
         },
         name: {
             type: Sequelize.STRING,
-            unique: true,
             comment: '名称'
         },
-        remark: {
+        path: {
             type: Sequelize.STRING,
-            comment: '备注'
+            comment: '路径'
         },
-        scope: {
-            type: Sequelize.STRING,
-            comment: '权限范围'
+        pid: {
+            type: Sequelize.INTEGER, 
+            comment: '上级菜单'
         },
-        level: {
+        sort: {
             type: Sequelize.INTEGER,
-            comment: '级别'
+            comment: '排序',
+            defaultValue: 999
         },
         state: {
             type: Sequelize.STRING,
@@ -38,8 +38,9 @@ Role.init(
     },
     {
         sequelize,
-        tableName: 'role'
+        tableName: 'menu'
     }
 )
-    
-export default Role
+
+export default Menu
+

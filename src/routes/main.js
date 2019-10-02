@@ -54,12 +54,6 @@ routes.forEach(route => {
 })
 
 export default router
-    // 测试模块
-    .get('/public/api/:name', controllers.api.Get)
-    .post('/api/:name', controllers.api.Post)
-    .put('/api/:name', controllers.api.Put)
-    .del('/api/:name', controllers.api.Delete)
-
     // 借书模块
     // .post('/api/student/add/:name', controllers.record.student_add)
     // .post('/api/student/del/:name', controllers.record.student_del)

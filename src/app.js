@@ -9,29 +9,21 @@ import path from 'path'
 import config from './config'
 import errorcatch from './middleware/errorcatch'
 import errorroutes from './middleware/errorroutes'
-import { _permissions } from './middleware/permissions'
+import { permsread } from './middleware/permissions'
 import mainroutes from './routes/main'
-import init from './utils/init'
 
 const app = new Koa()
 const env = process.env.NODE_ENV || 'development'
 const server = require('http').Server(app.callback())
 
-// initialize
-init()
-
 // error handler
 onerror(app)
-
-// global objects
-const errors = require('./utils/errors')
-global.errs = errors
-global.config = config
 
 // middlewares
 app.use((ctx, next) => {
     if (ctx.request.header.host.split(':')[0] === 'localhost' || ctx.request.header.host.split(':')[0] === '127.0.0.1') {
-        ctx.set('Access-Control-Allow-Origin', 'http://localhost:4444')
+        // ctx.set('Access-Control-Allow-Origin', 'http://localhost:4444')
+        ctx.set('Access-Control-Allow-Origin', '*')
     } else {
         ctx.set('Access-Control-Allow-Origin', config.sys.http_server_host)
     }
@@ -48,7 +40,7 @@ app.use((ctx, next) => {
 .use(logger())
 .use(errorcatch())
 .use(errorroutes())
-.use(_permissions())
+.use(permsread())
 .use(KoaStatic('assets', path.resolve(__dirname, '../assets')))
 .use(koaJwt({
     secret: global.config.app.secretkey

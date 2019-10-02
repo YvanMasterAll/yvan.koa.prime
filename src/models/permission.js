@@ -1,11 +1,11 @@
 const { sequelize } = require('../utils/db')
 const { Sequelize, Model } = require('sequelize')
 
-/// 角色
+/// 权限
 
-class Role extends Model {}
+class Permission extends Model {}
 
-Role.init(
+Permission.init(
     {
         id: {
             type: Sequelize.INTEGER,
@@ -15,20 +15,15 @@ Role.init(
         },
         name: {
             type: Sequelize.STRING,
-            unique: true,
             comment: '名称'
         },
-        remark: {
+        alias: {
             type: Sequelize.STRING,
-            comment: '备注'
+            comment: '别名'
         },
-        scope: {
-            type: Sequelize.STRING,
-            comment: '权限范围'
-        },
-        level: {
-            type: Sequelize.INTEGER,
-            comment: '级别'
+        pid: {
+            type: Sequelize.INTEGER, 
+            comment: '上级权限'
         },
         state: {
             type: Sequelize.STRING,
@@ -38,8 +33,8 @@ Role.init(
     },
     {
         sequelize,
-        tableName: 'role'
+        tableName: 'permission'
     }
 )
-    
-export default Role
+
+export default Permission
