@@ -88,10 +88,10 @@ class RecordDao {
         let records = await Record.findAll({
             include: [{
                 model: Student,
-                required: true
+                required: true,
             }, {
                 model: Book,
-                required: true
+                required: true,
             }],
             offset: v.page * v.limit,
             limit: v.limit,

@@ -3,7 +3,7 @@ const { Sequelize, Model } = require('sequelize')
 import Role from './role'
 import Dept from './dept'
 
-/// 角色所属部门, 角色权限范围
+/// 角色部门权限, 角色权限范围
 
 class Roles_Depts extends Model {}
 
@@ -26,7 +26,8 @@ Roles_Depts.init(
         state: {
             type: Sequelize.STRING,
             defaultValue: 'on',
-            comment: '状态'
+            comment: '状态',
+            validate: { isIn: global.enums._state }
         }
     },
     {

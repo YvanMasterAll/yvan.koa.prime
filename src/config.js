@@ -1,5 +1,6 @@
 import path from 'path'
 import fs from 'fs'
+import enums from './utils/enums'
 
 /// 项目配置
 
@@ -31,6 +32,16 @@ const config = {
         limit: 10,                      //分页大小
         secretkey: publicKey,           //jwt盐
         expiresIn: '2h',                //token时效'
+    },
+    redis: {
+        port: 6379, // Redis port
+        host: "127.0.0.1", // Redis host
+        // family: 4, // 4 (IPv4) or 6 (IPv6)
+        password: '',
+        db: 0 // 数据库索引
+    },
+    redis_keys: {
+        user_permissions: 'ups_hash'
     }
 }
 
@@ -38,5 +49,6 @@ const config = {
 global.config = config
 const errors = require('./utils/errors')
 global.errs = errors
+global.enums = enums
 
 export default config

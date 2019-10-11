@@ -128,5 +128,5 @@ module.exports = {
     PasswordWrong,
     UserRoleUnMatch,
     NoPermission,
-    TokenError
+    TokenError,
 }

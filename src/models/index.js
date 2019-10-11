@@ -11,7 +11,6 @@ import Roles_Depts from './roles_depts'
 import Roles_Menus from './roles_menus'
 import Roles_Permissions from './roles_permissions'
 import Users_Roles from './users_roles'
-import enums from '../utils/enums'
 
 module.exports = { 
     Book, Student, Record, User, Role, Dept, Job, Menu, Permission, Roles_Depts, Roles_Menus, Roles_Permissions, Users_Roles
@@ -19,6 +18,11 @@ module.exports = {
 
 // 测试数据库查询
 async function testSQL() {
+    let ur = Users_Roles()
+    ur.id = 4
+    ur.update_at = new Date()
+    ur.state = global.enums.state.off
+    await ur.save({attributes: ["state"]}, {transaction})
     // // 测试关联查询
     // let results = (await Users_Roles.findAll({
     //     include: [{
@@ -100,6 +104,25 @@ async function testSQL() {
 
     //     return path
     // }
+
+    // 测试部门整理
+    // let results = (await Dept.findAll()).map(d => d.toJSON())
+    // let depts = []
+    // results.forEach(r => {
+    //     if (r.pid === 0) {
+    //         depts.push(r)
+    //     }
+    //     results.forEach(r2 => {
+    //         if (r2.pid === r.id) {
+    //             if (!r.children) {
+    //                 r.children = [r2]
+    //             } else {
+    //                 r.children.push(r2)
+    //             }
+    //         }
+    //     })
+    // })
+    // console.log(depts[0].children)
 }
 
 testSQL()
@@ -155,7 +178,7 @@ function initData() {
     // // data = [
     // //     [1, '超级管理员', 'ADMIN', 0], [2, '用户管理', 'USER_ALL', 0], [3, '用户查询', 'USER_SELECT', 2], [4, '用户创建', 'USER_CREATE', 2], [5, '用户编辑', 'USER_EDIT', 2], [6, '用户删除', 'USER_DELETE', 2], [7, '角色管理', 'ROLES_ALL', 0], [8, '角色查询', 'ROLES_SELECT', 7], [10, '角色创建', 'ROLES_CREATE', 7], [11, '角色编辑', 'ROLES_EDIT', 7], [12, '角色删除', 'ROLES_DELETE', 7], [13, '权限管理', 'PERMISSION_ALL', 0], [14, '权限查询', 'PERMISSION_SELECT', 13], [15, '权限创建', 'PERMISSION_CREATE', 13], [16, '权限编辑', 'PERMISSION_EDIT', 13], [17, '权限删除', 'PERMISSION_DELETE', 13], [18, '缓存管理', 'REDIS_ALL', 0], [20, '缓存查询', 'REDIS_SELECT', 18], [22, '缓存删除', 'REDIS_DELETE', 18], [23, '图床管理', 'PICTURE_ALL', 0], [24, '查询图片', 'PICTURE_SELECT', 23], [25, '上传图片', 'PICTURE_UPLOAD', 23], [26, '删除图片', 'PICTURE_DELETE', 23], [29, '菜单管理', 'MENU_ALL', 0], [30, '菜单查询', 'MENU_SELECT', 29], [31, '菜单创建', 'MENU_CREATE', 29], [32, '菜单编辑', 'MENU_EDIT', 29], [33, '菜单删除', 'MENU_DELETE', 29], [35, '定时任务管理', 'JOB_ALL', 0], [36, '任务查询', 'JOB_SELECT', 35], [37, '任务创建', 'JOB_CREATE', 35], [38, '任务编辑', 'JOB_EDIT', 35], [39, '任务删除', 'JOB_DELETE', 35], [40, '部门管理', 'DEPT_ALL', 0], [41, '部门查询', 'DEPT_SELECT', 40], [42, '部门创建', 'DEPT_CREATE', 40], [43, '部门编辑', 'DEPT_EDIT', 40], [44, '部门删除', 'DEPT_DELETE', 40], [45, '岗位管理', 'USERJOB_ALL', 0], [46, '岗位查询', 'USERJOB_SELECT', 45], [47, '岗位创建', 'USERJOB_CREATE', 45], [48, '岗位编辑', 'USERJOB_EDIT', 45], [49, '岗位删除', 'USERJOB_DELETE', 45], [50, '字典管理', 'DICT_ALL', 0], [51, '字典查询', 'DICT_SELECT', 50], [52, '字典创建', 'DICT_CREATE', 50], [53, '字典编辑', 'DICT_EDIT', 50], [54, '字典删除', 'DICT_DELETE', 50], [55, '文件管理', 'LOCALSTORAGE_ALL', 0], [56, '文件搜索', 'LOCALSTORAGE_SELECT', 55], [57, '文件上传', 'LOCALSTORAGE_CREATE', 55], [58, '文件编辑', 'LOCALSTORAGE_EDIT', 55], [59, '文件删除', 'LOCALSTORAGE_DELETE', 55]
     // // ]
-    // data = enums.permissions
+    // data = global.enums.permissions
 
     // data.forEach(async d => {
     //     let permission = new Permission()
@@ -183,7 +206,7 @@ function initData() {
     //     await role.save()
     // })
 
-    // // DATA: 角色所属部门
+    // // DATA: 角色部门权限
     // data = [
     //     [1, 2, 5],
     //     [2, 3, 8],

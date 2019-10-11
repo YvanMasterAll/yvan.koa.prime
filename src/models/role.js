@@ -33,7 +33,8 @@ Role.init(
         state: {
             type: Sequelize.STRING,
             defaultValue: 'on',
-            comment: '状态'
+            comment: '状态',
+            validate: { isIn: global.enums._state }
         }
     },
     {

@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken')
+var _ = require('lodash')
 
 const utils = {
     setpage: function(ctx) {            // 设置分页
@@ -21,6 +22,23 @@ const utils = {
     getJWTPayload(token) {              // 通过token获取json数据
         return jwt.verify(token.split(' ')[1], global.config.app.secretkey);
     },
+    stateValid(state, value) {
+        let flag = false
+        _.forEach(state, function(v, key) {
+            if (value === v) {
+                flag = true
+                return false
+            }
+        })
+
+        return flag
+    },
 }
+
+/// 扩展
+String.prototype.startWith = function(str){    
+    var reg = new RegExp('^' + str)
+    return reg.test(this)
+} 
 
 export default utils

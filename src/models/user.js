@@ -29,7 +29,10 @@ User.init(
         },
         email: {
             type: Sequelize.STRING,
-            commit: '邮箱'
+            commit: '邮箱',
+            validate: {
+                isEmail: true
+            }
         },
         phone: {
             type: Sequelize.STRING,
@@ -42,6 +45,12 @@ User.init(
         job_id: {
             type: Sequelize.INTEGER,
             comment: '岗位ID'
+        },
+        state: {
+            type: Sequelize.STRING,
+            defaultValue: 'on',
+            comment: '状态',
+            validate: { isIn: global.enums._state }
         }
     },
     {

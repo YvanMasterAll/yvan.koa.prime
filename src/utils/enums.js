@@ -7,10 +7,14 @@ const enums = {
         off: 'off',
         delete: 'delete'
     },
+    _state: ['on', 'off', 'delete'],
     scope: {            // 权限范围
         all: 'all',     // 全部
         diy: 'diy',     // 自定义
         same: 'same'    // 本级
+    },
+    where: {
+        state: 'on'
     },
     permissions: [
         { id: 1, name: '超级管理员', alias: 'ADMIN', pid: 0 },

@@ -4,52 +4,74 @@ import { permissionCheck } from '../middleware/permissions'
 
 const router = new KoaRouter()
 
+let meta = { auth: false }
+
 const routes = [
     /// 借书模块
     {
         method: 'post',
         path: '/api/student/add/:name',
-        perm: [102],
+        meta: { ...meta, perm: [] },
         control: controllers.record.student_add
     },
     {
         method: 'post',
         path: '/api/student/del/:name',
-        perm: [],
+        meta: { ...meta, perm: [] },
         control: controllers.record.student_del
     },
     {
         method: 'post',
         path: '/api/book/add',
-        perm: [],
+        meta: { ...meta, perm: [] },
         control: controllers.record.book_add
     },
     {
         method: 'post',
         path: '/api/book/del/:name',
-        perm: [],
+        meta: { ...meta, perm: [] },
         control: controllers.record.book_del
     },
     {
         method: 'post',
         path: '/api/book/borrow/:stuid/:bookid',
-        perm: [],
+        meta: { ...meta, perm: [] },
         control: controllers.record.book_borrow
     },
     {
         method: 'post',
         path: '/api/record/:page',
-        perm: [],
+        meta: { ...meta, perm: [] },
         control: controllers.record.record_list
-    }
+    },
+    /// 通用模块
+    {
+        method: 'get',
+        path: '/api/common/depts',
+        meta: { ...meta },
+        control: controllers.common.depts
+    },
+    /// 用户模块
+    {
+        method: 'get',
+        path: '/api/user/list',
+        meta: { ...meta },
+        control: controllers.user.list
+    },
+    {
+        method: 'post',
+        path: '/api/user/add',
+        meta: { ...meta },
+        control: controllers.user.add
+    },
 ]
 
 routes.forEach(route => {
     if (route.method === 'post') {
-        router.post(route.path, permissionCheck(route.perm), route.control)
+        router.post(route.path, permissionCheck(route), route.control)
     }
     if (route.method === 'get') {
-        router.get(route.path, permissionCheck(route.perm), route.control)
+        router.get(route.path, permissionCheck(route), route.control)
     }
 })
 
@@ -64,5 +86,4 @@ export default router
 
     // 认证模块
     .post('/api/auth/signin', controllers.auth.signin)
-    .post('/api/auth/signup', controllers.auth.signup)
     .get('/api/auth/check', controllers.auth.check)

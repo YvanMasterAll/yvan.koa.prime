@@ -23,6 +23,21 @@ const sequelize = new Sequelize(
 
 sequelize.sync({ force: false }) //自动创建表
 
+function doTransaction(exec, error) {
+    // 开始事务
+    let transaction
+    try {
+        transaction = await sequelize.transaction()
+        exec(transaction)
+
+        await transaction.commit()
+    } catch (err) {
+        await transaction.rollback()
+        if (error) { error() }
+    }
+}
+
 module.exports = {
-    sequelize
+    sequelize,
+    doTransaction
 }
