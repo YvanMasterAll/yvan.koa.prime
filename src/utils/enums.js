@@ -1,3 +1,4 @@
+const Sequelize = require('sequelize')
 
 // 枚举常量
 
@@ -5,36 +6,43 @@ const enums = {
     state: {            // 数据状态
         on: 'on',
         off: 'off',
-        delete: 'delete'
+        del: 'del'
     },
-    _state: ['on', 'off', 'delete'],
+    _state: ['on', 'off', 'del'],
     scope: {            // 权限范围
         all: 'all',     // 全部
         diy: 'diy',     // 自定义
         same: 'same'    // 本级
     },
-    where: {
+    where: {            // 悲观条件
         state: 'on'
     },
+    _where: {           // 乐观条件
+        state: {
+            [Sequelize.Op.notIn]: ['del']
+        }
+    },
     permissions: [
-        { id: 1, name: '超级管理员', alias: 'ADMIN', pid: 0 },
-        { id: 2, name: '用户管理', alias: 'USER_ALL', pid: 0 },
-        { id: 3, name: '用户查询', alias: 'USER_SELECT', pid: 2 },
-        { id: 4, name: '用户创建', alias: 'USER_CREATE', pid: 2 },
-        { id: 5, name: '用户编辑', alias: 'USER_EDIT', pid: 2 },
-        { id: 6, name: '用户删除', alias: 'USER_DELETE', pid: 2 },
-        { id: 7, name: '角色管理', alias: 'ROLES_ALL', pid: 0 },
-        { id: 8, name: '角色查询', alias: 'ROLES_SELECT', pid: 7 },
-        { id: 10, name: '角色创建', alias: 'ROLES_CREATE', pid: 7 },
-        { id: 11, name: '角色编辑', alias: 'ROLES_EDIT', pid: 7 },
-        { id: 12, name: '角色删除', alias: 'ROLES_DELETE', pid: 7 },
-        { id: 13, name: '权限管理', alias: 'PERMISSION_ALL', pid: 0 },
-        { id: 14, name: '权限查询', alias: 'PERMISSION_SELECT', pid: 13 },
-        { id: 15, name: '权限创建', alias: 'PERMISSION_CREATE', pid: 13 },
-        { id: 16, name: '权限编辑', alias: 'PERMISSION_EDIT', pid: 13 },
-        { id: 17, name: '权限删除', alias: 'PERMISSION_DELETE', pid: 13 },
-        { id: 18, name: '缓存管理', alias: 'REDIS_ALL', pid: 0 },
-        { id: 20, name: '缓存查询', alias: 'REDIS_SELECT', pid: 18 },
+        { id: 1, name: '超级管理员', alias: 'admin', pid: 0 },
+        { id: 2, name: '用户管理', alias: 'user', pid: 0 },
+        { id: 3, name: '用户查询', alias: 'list', pid: 2 },
+        { id: 4, name: '用户创建', alias: 'add', pid: 2 },
+        { id: 5, name: '用户编辑', alias: 'edit', pid: 2 },
+        { id: 6, name: '用户删除', alias: 'del', pid: 2 },
+        { id: 7, name: '角色管理', alias: 'role', pid: 0 },
+        { id: 8, name: '角色查询', alias: 'list', pid: 7 },
+        { id: 10, name: '角色创建', alias: 'add', pid: 7 },
+        { id: 11, name: '角色编辑', alias: 'edit', pid: 7 },
+        { id: 12, name: '角色删除', alias: 'del', pid: 7 },
+        { id: 13, name: '菜单编辑', alias: 'menu_edit', pid: 7 },
+        { id: 14, name: '权限编辑', alias: 'permission_edit', pid: 7 },
+        { id: 15, name: '权限管理', alias: 'PERMISSION_ALL', pid: 0 },
+        { id: 16, name: '权限查询', alias: 'PERMISSION_SELECT', pid: 13 },
+        { id: 17, name: '权限创建', alias: 'PERMISSION_CREATE', pid: 13 },
+        { id: 18, name: '权限编辑', alias: 'PERMISSION_EDIT', pid: 13 },
+        { id: 19, name: '权限删除', alias: 'PERMISSION_DELETE', pid: 13 },
+        { id: 20, name: '缓存管理', alias: 'REDIS_ALL', pid: 0 },
+        { id: 21, name: '缓存查询', alias: 'REDIS_SELECT', pid: 18 },
         { id: 22, name: '缓存删除', alias: 'REDIS_DELETE', pid: 18 },
         { id: 23, name: '图床管理', alias: 'PICTURE_ALL', pid: 0 },
         { id: 24, name: '查询图片', alias: 'PICTURE_SELECT', pid: 23 },
@@ -70,6 +78,40 @@ const enums = {
         { id: 57, name: '文件上传', alias: 'LOCALSTORAGE_CREATE', pid: 55 },
         { id: 58, name: '文件编辑', alias: 'LOCALSTORAGE_EDIT', pid: 55 },
         { id: 59, name: '文件删除', alias: 'LOCALSTORAGE_DELETE', pid:  5}
+    ],
+    menus: [
+        {id: 1, name: '系统管理', path: null, pid: 0, sort: 1}, 
+        {id: 2, name: '用户管理', path: 'admin/user', pid: 1, sort: 2}, 
+        {id: 3, name: '角色管理', path: 'admin/role', pid: 1, sort: 3}, 
+        {id: 35,name: '部门管理', path: 'admin/dept', pid: 1, sort: 6}, 
+        {id: 37,name: '岗位管理', path: 'admin/job', pid: 1, sort: 7}, 
+        {id: 28,name: '定时任务', path: 'admin/timing/index', pid: 36, sort: 21}, 
+        {id: 39,name: '字典管理', path: 'admin/dict/index', pid: 1, sort: 8},
+        {id: 4, name: '权限管理', path: 'admin/permission/index', pid: 1, sort: 4}, 
+        {id: 5, name: '菜单管理', path: 'admin/menu/index', pid: 1, sort: 5}, 
+        {id: 6, name: '系统监控', path: null, pid: 0, sort: 10}, 
+        {id: 7, name: '操作日志', path: 'monitor/log/index', pid: 6, sort: 11}, 
+        {id: 8, name: '系统缓存', path: 'monitor/redis/index', pid: 6, sort: 13}, 
+        {id: 9, name: 'SQL监控', path: 'monitor/sql/index', pid: 6, sort: 14}, 
+        {id: 10,name: '组件管理', path: null, pid: 0, sort: 50}, 
+        {id: 11,name: '图标库', path: 'components/IconSelect', pid: 10, sort: 51}, 
+        {id: 14,name: '邮件工具', path: 'tools/email/index', pid: 36, sort: 24}, 
+        {id: 15,name: '富文本', path: 'components/Editor', pid: 10, sort: 52}, 
+        {id: 16,name: '图床管理', path: 'tools/picture/index', pid: 36, sort: 25}, 
+        {id: 17,name: '项目地址', path: null, pid: 0, sort: 0}, 
+        {id: 18,name: '存储管理', path: 'tools/storage/index', pid: 36, sort: 23}, 
+        {id: 19,name: '支付宝工具', path: 'tools/aliPay/index', pid: 36, sort: 27}, 
+        {id: 21,name: '多级菜单', path: null, pid: 0, sort: 900}, 
+        {id: 22,name: '二级菜单1', path: 'nested/menu1/index', pid: 21, sort: 999}, 
+        {id: 23,name: '二级菜单2', path: 'nested/menu2/index', pid: 21, sort: 999}, 
+        {id: 24,name: '三级菜单1', path: 'nested/menu1/menu1-1', pid: 22, sort: 999}, 
+        {id: 27,name: '三级菜单2', path: 'nested/menu1/menu1-2', pid: 22, sort: 999}, 
+        {id: 30,name: '代码生成', path: 'generator/index', pid: 36, sort: 22}, 
+        {id: 32,name: '异常日志', path: 'monitor/log/errorLog', pid: 6, sort: 12},
+        {id: 33,name: 'Markdown', path: 'components/MarkDown', pid: 10, sort: 53}, 
+        {id: 34,name: 'Yaml编辑器', path: 'components/YamlEdit', pid: 10, sort: 54}, 
+        {id: 36,name: '系统工具', path: null, pid: 0, sort: 20}, 
+        {id: 38,name: '接口文档', path: 'tools/swagger/index', pid: 36, sort: 26}, 
     ]
 }
 

@@ -1,23 +1,40 @@
 import utils from '../utils'
-import AuthDao from '../dao/auth'
+import { AuthDao, UserDao, RedisDao } from '../dao'
 var _ = require('lodash')
+import { iError } from '../utils/errors'
+
+/// koaJwt钩子
+const isRevoked = async (ctx, token, json) => {
+    // console.log(ctx.headers.authorization)
+    let user = utils.getJWTPayload("Bearer " + json)
+    // 判断用户是否已经登出
+    if (!(await RedisDao.user_tokened_get(user.id))) {
+        throw new global.errs.AuthFailed("用户已经登出")
+    }
+
+    ctx.state.user = user // 保存用户信息
+
+    return Promise.resolve(false)
+}
 
 /// 读取用户权限
 const permsread = function () {
     return async function (ctx, next) {
         // 保存登录用户信息
-        if (ctx.headers.authorization) {
+        if (ctx.state.user) {
             try {
-                let user = utils.getJWTPayload(ctx.headers.authorization)
+                let user = ctx.state.user
+                // 日志信息
+                ctx.request_log.name = user.name
                 // TODO: 判断用户状态是否正常
                 // 读取角色权限
-                user.roles = await AuthDao.roles(user.id)
-                user.roleids = user.roles.map(d => d.id)
-                user.perms = await AuthDao.permissions(user.roleids, user.id)
-                if (user.perms.filter(d => d.id === 1).length > 0 && user.roleids.filter(d => d === 1).length > 0) { // 超级管理员
+                user.roles = await AuthDao.user_roles(user.id)
+                user.roleids = user.roles.map(r => r.id)
+                user.perms = await AuthDao.roles_permissions(user.roleids)
+                if (await UserDao.isAdmin(null, user.roleids, user.perms)) { // 超级管理员
                     user.isadmin = true
                 }
-                // 部门权限和角色级别
+                // 权限范围和角色级别
                 let scopes = user.roles.map(d => d.scope)
                 let scope = global.enums.scope.same
                 let level = 0
@@ -36,6 +53,9 @@ const permsread = function () {
                 ctx.state._user = user
             } catch (error) { 
                 console.log(error)
+                if (error instanceof iError) {
+                    throw error
+                }
                 // throw error
                 // TODO: 判断错误类型是否为超时, 根据情况决定是否刷新token
             }
@@ -55,7 +75,7 @@ const permissionCheck = function (route) {
             return next()
         }
         
-        let path = route.path.replace('/api/', '')
+        let path = route.path.replace(global.config.app.prefix, '') // 去除前缀
         let pass = false
         perms.forEach(d => {
             let _path = _.lowerCase(d.path)
@@ -74,5 +94,6 @@ const permissionCheck = function (route) {
 
 module.exports = {
     permsread,
-    permissionCheck
+    permissionCheck,
+    isRevoked
 }

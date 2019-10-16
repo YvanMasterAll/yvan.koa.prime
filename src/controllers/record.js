@@ -1,4 +1,4 @@
-import RecordDao from '../dao/record'
+import { RecordDao } from '../dao'
 
 /// 添加学生
 export const student_add = async (ctx, next) => {

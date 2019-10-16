@@ -5,11 +5,12 @@ const Resolve = {
             msg
         }
     },
-    json: function (data, msg = '操作成功', code = 200) {
+    json: function (data, msg = '操作成功', total, code = 200) {
         this.body = {
             code,
             msg,
-            data
+            data,
+            total
         }
     },
     error: function (err) {

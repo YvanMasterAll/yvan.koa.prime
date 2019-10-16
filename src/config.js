@@ -25,13 +25,14 @@ const config = {
         username: 'zzcloud',            //数据库用户名
         password: 'zzcloud',            //数据库密码
         database: 'zzcloud2',           //数据库名称
-        prefix: '',                     //表前缀, 如"api_"
+        prefix: '/api/',                     //表前缀, 如"api_"
         avatar: 'https://source.unsplash.com/zBmcEepz5FQ/256x256' //默认头像
     },
     app: {
         limit: 10,                      //分页大小
         secretkey: publicKey,           //jwt盐
-        expiresIn: '2h',                //token时效'
+        expiresIn: '2h',                //token时效
+        expiresIn_redis: 7*24*60*60*1000, //redis缓存时效
     },
     redis: {
         port: 6379, // Redis port
@@ -40,8 +41,21 @@ const config = {
         password: '',
         db: 0 // 数据库索引
     },
-    redis_keys: {
-        user_permissions: 'ups_hash'
+    rkeys: { // redis keys
+        user_tokened: 'user::tokened:',
+        permission_tree: 'permission::tree',
+        dept_tree: 'dept::tree',
+        menu_tree: 'menu::tree',
+        menu_all: 'menu::all',
+        dept_all: 'dept::all',
+        role_all: 'role::all',
+        job_all: 'job::all',
+        permission_all: 'permissionu::all',
+        time_permission: 'time::permission',
+        time_menu: 'time::menu',
+        time_dept: 'time::dept',
+        time_role: 'time::role',
+        time_job: 'time::job'
     }
 }
 

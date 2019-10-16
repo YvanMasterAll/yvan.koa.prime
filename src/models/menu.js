@@ -34,7 +34,7 @@ Menu.init(
             type: Sequelize.STRING,
             defaultValue: 'on',
             comment: '状态',
-            validate: { isIn: global.enums._state }
+            validate: { isIn: [global.enums._state] }
         }
     },
     {

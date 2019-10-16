@@ -9,8 +9,8 @@ import path from 'path'
 import config from './config'
 import errorcatch from './middleware/errorcatch'
 import errorroutes from './middleware/errorroutes'
-import { permsread } from './middleware/permissions'
-import mainroutes from './routes/main'
+import { permsread, isRevoked } from './middleware/permissions'
+import mainroutes, { jwt_exclude } from './routes/main'
 
 const app = new Koa()
 const env = process.env.NODE_ENV || 'development'
@@ -41,17 +41,14 @@ app.use((ctx, next) => {
 .use(logger())
 .use(errorcatch())
 .use(errorroutes())
-.use(permsread())
 .use(KoaStatic('assets', path.resolve(__dirname, '../assets')))
 .use(koaJwt({
-    secret: global.config.app.secretkey
+    secret: global.config.app.secretkey,
+    isRevoked: isRevoked
 }).unless({
-    path: [
-        /^\/api\/auth\/signin/,
-        /^\/api\/auth\/signup/,
-        /^((?!\/api).)*$/ // 设置除了私有接口外的其它资源, 可以不需要认证访问
-    ]
+    path: jwt_exclude
 }))
+.use(permsread())
 .use(mainroutes.routes(), mainroutes.allowedMethods())
 
 // logger

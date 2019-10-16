@@ -11,18 +11,14 @@ import Roles_Depts from './roles_depts'
 import Roles_Menus from './roles_menus'
 import Roles_Permissions from './roles_permissions'
 import Users_Roles from './users_roles'
+import Log from './log'
 
 module.exports = { 
-    Book, Student, Record, User, Role, Dept, Job, Menu, Permission, Roles_Depts, Roles_Menus, Roles_Permissions, Users_Roles
+    Book, Student, Record, User, Role, Dept, Job, Menu, Permission, Roles_Depts, Roles_Menus, Roles_Permissions, Users_Roles, Log
 }
 
 // 测试数据库查询
 async function testSQL() {
-    let ur = Users_Roles()
-    ur.id = 4
-    ur.update_at = new Date()
-    ur.state = global.enums.state.off
-    await ur.save({attributes: ["state"]}, {transaction})
     // // 测试关联查询
     // let results = (await Users_Roles.findAll({
     //     include: [{
@@ -159,17 +155,18 @@ function initData() {
     // })
 
     // // DATA: 菜单
-    // data = [ 
-    //     [1, '系统管理', null, 0, 1], [2, '用户管理', 'system/user/index', 1, 2], [3, '角色管理', 'system/role/index', 1, 3], [4, '权限管理', 'system/permission/index', 1, 4], [5, '菜单管理', 'system/menu/index', 1, 5], [6, '系统监控', null, 0, 10], [7, '操作日志', 'monitor/log/index', 6, 11], [8, '系统缓存', 'monitor/redis/index', 6, 13], [9, 'SQL监控', 'monitor/sql/index', 6, 14], [10, '组件管理', null, 0, 50], [11, '图标库', 'components/IconSelect', 10, 51], [14, '邮件工具', 'tools/email/index', 36, 24], [15, '富文本', 'components/Editor', 10, 52], [16, '图床管理', 'tools/picture/index', 36, 25], [17, '项目地址', null, 0, 0], [18, '存储管理', 'tools/storage/index', 36, 23], [19, '支付宝工具', 'tools/aliPay/index', 36, 27], [21, '多级菜单', null, 0, 900], [22, '二级菜单1', 'nested/menu1/index', 21, 999], [23, '二级菜单2', 'nested/menu2/index', 21, 999], [24, '三级菜单1', 'nested/menu1/menu1-1', 22, 999], [27, '三级菜单2', 'nested/menu1/menu1-2', 22, 999], [28, '定时任务', 'system/timing/index', 36, 21], [30, '代码生成', 'generator/index', 36, 22], [32, '异常日志', 'monitor/log/errorLog', 6, 12], [33, 'Markdown', 'components/MarkDown', 10, 53], [34, 'Yaml编辑器', 'components/YamlEdit', 10, 54], [35, '部门管理', 'system/dept/index', 1, 6], [36, '系统工具', null, 0, 20], [37, '岗位管理', 'system/job/index', 1, 7], [38, '接口文档', 'tools/swagger/index', 36, 26], [39, '字典管理', 'system/dict/index', 1, 8]
-    // ]
+    // // data = [ 
+    // //     [1, '系统管理', null, 0, 1], [2, '用户管理', 'system/user/index', 1, 2], [3, '角色管理', 'system/role/index', 1, 3], [4, '权限管理', 'system/permission/index', 1, 4], [5, '菜单管理', 'system/menu/index', 1, 5], [6, '系统监控', null, 0, 10], [7, '操作日志', 'monitor/log/index', 6, 11], [8, '系统缓存', 'monitor/redis/index', 6, 13], [9, 'SQL监控', 'monitor/sql/index', 6, 14], [10, '组件管理', null, 0, 50], [11, '图标库', 'components/IconSelect', 10, 51], [14, '邮件工具', 'tools/email/index', 36, 24], [15, '富文本', 'components/Editor', 10, 52], [16, '图床管理', 'tools/picture/index', 36, 25], [17, '项目地址', null, 0, 0], [18, '存储管理', 'tools/storage/index', 36, 23], [19, '支付宝工具', 'tools/aliPay/index', 36, 27], [21, '多级菜单', null, 0, 900], [22, '二级菜单1', 'nested/menu1/index', 21, 999], [23, '二级菜单2', 'nested/menu2/index', 21, 999], [24, '三级菜单1', 'nested/menu1/menu1-1', 22, 999], [27, '三级菜单2', 'nested/menu1/menu1-2', 22, 999], [28, '定时任务', 'system/timing/index', 36, 21], [30, '代码生成', 'generator/index', 36, 22], [32, '异常日志', 'monitor/log/errorLog', 6, 12], [33, 'Markdown', 'components/MarkDown', 10, 53], [34, 'Yaml编辑器', 'components/YamlEdit', 10, 54], [35, '部门管理', 'system/dept/index', 1, 6], [36, '系统工具', null, 0, 20], [37, '岗位管理', 'system/job/index', 1, 7], [38, '接口文档', 'tools/swagger/index', 36, 26], [39, '字典管理', 'system/dict/index', 1, 8]
+    // // ]
+    // let data = global.enums.menus
 
     // data.forEach(async d => {
     //     let menu = new Menu()
-    //     menu.id = d[0]
-    //     menu.name = d[1]
-    //     menu.path = d[2]
-    //     menu.pid = d[3]
-    //     menu.sort = d[4]
+    //     menu.id = d.id
+    //     menu.name = d.name
+    //     menu.path = d.path
+    //     menu.pid = d.pid
+    //     menu.sort = d.sort
     
     //     await menu.save()
     // })
@@ -206,7 +203,7 @@ function initData() {
     //     await role.save()
     // })
 
-    // // DATA: 角色部门权限
+    // // DATA: 角色的部门权限
     // data = [
     //     [1, 2, 5],
     //     [2, 3, 8],
@@ -224,9 +221,9 @@ function initData() {
     //     await roles_depts.save()
     // })
 
-    // DATA: 角色菜单权限
+    // DATA: 角色的菜单权限
     // data = [ 
-    //     [1, 1], [2, 1], [3, 1], [4, 1], [5, 1], [6, 1], [7, 1], [8, 1], [9, 1], [10, 1], [11, 1], [14, 1], [15, 1], [16, 1], [17, 1], [18, 1], [19, 1], [21, 1], [22, 1], [23, 1], [24, 1], [27, 1], [28, 1], [30, 1], [32, 1], [33, 1], [34, 1], [35, 1], [36, 1], [37, 1], [38, 1], [39, 1], [1, 2], [2, 2], [3, 2], [4, 2], [5, 2], [6, 2], [8, 2], [9, 2], [10, 2], [11, 2], [14, 2], [15, 2], [16, 2], [17, 2], [18, 2], [19, 2], [21, 2], [22, 2], [23, 2], [24, 2], [27, 2], [28, 2], [30, 2], [33, 2], [34, 2], [35, 2], [36, 2], [37, 2], [38, 2], [39, 2], [1, 4], [2, 4],
+    //     [1, 3], [2, 3], [3, 3], [4, 3], [5, 3], [6, 3], [8, 3], [9, 3], [10, 3], [11, 3], [14, 3], [15, 3], [16, 3], [17, 3], [18, 3], [19, 3], [21, 3], [22, 3], [23, 3], [24, 3], [27, 3], [28, 3], [30, 3], [33, 3], [34, 3], [35, 3], [36, 3], [37, 3], [38, 3], [39, 3], [1, 2], [2, 2],
     // ]
 
     // data.forEach(async d => {
@@ -237,9 +234,9 @@ function initData() {
     //     await roles_menus.save()
     // })
 
-    // // DATA: 角色权限
+    // // DATA: 角色的资源权限
     // data = [ 
-    //     [1, 1], [2, 3], [4, 3], [4, 4], [4, 5], [2, 8], [2, 14], [2, 20], [2, 23], [2, 24], [2, 25], [2, 26], [2, 30], [2, 36], [2, 41], [2, 46], [2, 51],
+    //     [1, 1], [2, 3], [2, 4], [2, 5], [3, 3], [3, 8], [3, 14], [3, 20], [3, 23], [3, 24], [3, 25], [3, 26], [3, 30], [3, 36], [3, 41], [3, 46], [3, 51],
     // ]
 
     // data.forEach(async d => {
@@ -250,7 +247,7 @@ function initData() {
     //     await roles_permissions.save()
     // })
 
-    // // DATA: 用户橘色
+    // // DATA: 用户角色
     // data = [
     //     [1, 1], [2, 2], [3, 3]
     // ]
@@ -284,4 +281,4 @@ function initData() {
     // })
 }
 
-// initData()
+initData()

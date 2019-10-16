@@ -1,50 +1,54 @@
-const moment = require('moment')
 const { sequelize } = require('../utils/db')
 const { Sequelize, Model } = require('sequelize')
 
-/// 用户
+/// 日志
 
-class User extends Model {}
+class Log extends Model {}
 
-User.init(
+Log.init(
     {
         id: {
             type: Sequelize.INTEGER,
-            autoIncrement: true,
             primaryKey: true,
+            autoIncrement: true,
             comment: 'ID'
         },
         name: {
             type: Sequelize.STRING,
-            commit: '名称'
+            comment: '用户名'
         },
-        password: {
+        description: {
             type: Sequelize.STRING,
-            commit: '密码'
+            comment: '描述信息'
         },
-        avatar: {
+        exception_detail: {
             type: Sequelize.STRING,
-            commit: '头像',
-            defaultValue: global.config.db.avatar
+            comment: '异常信息'
         },
-        email: {
+        log_type: {
             type: Sequelize.STRING,
-            commit: '邮箱',
-            validate: {
-                isEmail: true
-            }
+            comment: '类型',
+            defaultValue: 'success'
         },
-        phone: {
+        method: {
             type: Sequelize.STRING,
-            commit: '电话号码'
+            comment: '方法'
         },
-        dept_id: {
+        params: {
+            type: Sequelize.STRING, 
+            comment: '参数'
+        },
+        request_ip: {
+            type: Sequelize.STRING,
+            comment: 'IP'
+        },
+        time: {
             type: Sequelize.INTEGER,
-            comment: '部门ID'
+            comment: '耗时'
         },
-        job_id: {
-            type: Sequelize.INTEGER,
-            comment: '岗位ID'
+        address: {
+            type: Sequelize.STRING,
+            comment: 'IP来源'
         },
         state: {
             type: Sequelize.STRING,
@@ -55,8 +59,8 @@ User.init(
     },
     {
         sequelize,
-        tableName: 'user'
+        tableName: 'log'
     }
 )
 
-export default User
+export default Log

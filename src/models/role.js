@@ -15,7 +15,6 @@ Role.init(
         },
         name: {
             type: Sequelize.STRING,
-            unique: true,
             comment: '名称'
         },
         remark: {
@@ -34,7 +33,7 @@ Role.init(
             type: Sequelize.STRING,
             defaultValue: 'on',
             comment: '状态',
-            validate: { isIn: global.enums._state }
+            validate: { isIn: [global.enums._state] }
         }
     },
     {
