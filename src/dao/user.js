@@ -185,7 +185,7 @@ class UserDao {
                 }]
             }, {
                 model: Role,
-                required: true,
+                required: false,
                 where: { ...global.enums.where, ...where.role }
             }], where: { ...global.enums._where },
             offset: ctx.limit*ctx.pagenum,
@@ -201,9 +201,9 @@ class UserDao {
         results.forEach(r => {
             let user = users.filter(u => u.id === r.user.id)[0]
             if (user) {
-                user.roles.push(r.role)
+                r.role && user.roles.push(r.role)
             } else {
-                users.push({...r.user, roles: [r.role]})
+                users.push({...r.user, roles: r.role ? [r.role]:[]})
             }
         })
 
@@ -211,7 +211,7 @@ class UserDao {
     }
 
     /// 添加用户
-    static async user_add(params) {
+    static async user_add(params, roleids) {
         await doTransaction(async function(transaction) {
             // 添加用户
             let user = new User()
@@ -236,7 +236,7 @@ class UserDao {
     }
 
     /// 编辑用户
-    static async user_edit(params, password, roleids) {
+    static async user_edit(id, params, password, roleids) {
         // 查询当前角色
         let current_roleids = (await Users_Roles.findAll({
             where: {

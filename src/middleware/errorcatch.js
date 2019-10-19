@@ -6,7 +6,7 @@ import { JsonWebTokenError } from 'jsonwebtoken'
 import { Log } from '../models'
 import { RedisDao } from '../dao'
 
-module.exports = function () {
+export default function () {
     return function (ctx, next) {
         // 为请求上下文添加结果处理函数
         ctx.resolve = resolve
@@ -57,7 +57,9 @@ module.exports = function () {
             // 记录异常日志
             if (ctx.request_log.description) {
                 ctx.request_log.type = 'error'
-                ctx.request_log.exception_detail = err
+                let err_detail = JSON.stringify(err)
+                if (err_detail.length > 200) { err_detail = err_detail.substr(0, 200) }
+                ctx.request_log.exception_detail = err_detail
                 ctx.request_log.time = new Date().getTime() - ctx.request_log.create_at.getTime()
                 ctx.request_log.save()
             }

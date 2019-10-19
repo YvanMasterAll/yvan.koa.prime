@@ -7,13 +7,6 @@ const router = new KoaRouter()
 let meta = { auth: true }
 
 const routes = {
-    /// 借书模块
-    student_add: { method: 'post', path: '/api/student/add/:name', meta: { ...meta, perm: [] }, control: controllers.record.student_add },
-    student_del: { method: 'post', path: '/api/student/del/:name', meta: { ...meta, perm: [] }, control: controllers.record.student_del },
-    book_add: { method: 'post', path: '/api/book/add', meta: { ...meta, perm: [] }, control: controllers.record.book_add },
-    book_del: { method: 'post', path: '/api/book/del/:name', meta: { ...meta, perm: [] }, control: controllers.record.book_del },
-    book_borrow: { method: 'post', path: '/api/book/borrow/:stuid/:bookid', meta: { ...meta, perm: [] }, control: controllers.record.book_borrow },
-    record_list: { method: 'post', path: '/api/record/:page', meta: { ...meta, perm: [] }, control: controllers.record.record_list },
     /// 通用模块
     depts: { method: 'get', path: '/api/common/depts', meta: { ...meta, auth: false }, control: controllers.common.depts },
     roles: { method: 'get', path: '/api/common/roles', meta: { ...meta, auth: false }, control: controllers.common.roles },
@@ -73,11 +66,4 @@ const jwt_exclude = [
 
 export { routes, jwt_exclude }
 export default router
-    // 借书模块
-    // .post('/api/student/add/:name', controllers.record.student_add)
-    // .post('/api/student/del/:name', controllers.record.student_del)
-    // .post('/api/book/add', controllers.record.book_add)
-    // .post('/api/book/del/:name', controllers.record.book_del)
-    // .post('/api/book/borrow/:stuid/:bookid', controllers.record.book_borrow)
-    // .post('/api/record/:page', controllers.record.record_list)
     

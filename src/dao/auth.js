@@ -113,7 +113,7 @@ class AuthDao {
                 if (!parent) {
                     return path
                 } else {
-                    path = path + '/' + parent.alias
+                    path = parent.alias + '/' + path
                     return findPath(source, path, parent)
                 }
             }

@@ -1,0 +1,13 @@
+2019/10/19 07:38:32 [error] 6#6: *2 open() "/usr/share/nginx/html/favicon.ico" failed (2: No such file or directory), client: 172.19.0.1, server: localhost, request: "GET /favicon.ico HTTP/1.1", host: "localhost:81", referrer: "http://localhost:81/"
+2019/10/19 07:39:01 [emerg] 20#20: bind() to 0.0.0.0:80 failed (98: Address already in use)
+2019/10/19 07:39:01 [emerg] 20#20: bind() to 0.0.0.0:80 failed (98: Address already in use)
+2019/10/19 07:39:01 [emerg] 20#20: bind() to 0.0.0.0:80 failed (98: Address already in use)
+2019/10/19 07:50:48 [emerg] 38#38: bind() to 0.0.0.0:80 failed (98: Address already in use)
+2019/10/19 07:50:48 [emerg] 38#38: bind() to 0.0.0.0:80 failed (98: Address already in use)
+2019/10/19 07:50:48 [emerg] 38#38: bind() to 0.0.0.0:80 failed (98: Address already in use)
+2019/10/19 07:51:35 [emerg] 43#43: bind() to 0.0.0.0:80 failed (98: Address already in use)
+2019/10/19 07:51:35 [emerg] 43#43: bind() to 0.0.0.0:80 failed (98: Address already in use)
+2019/10/19 07:51:35 [emerg] 43#43: bind() to 0.0.0.0:80 failed (98: Address already in use)
+2019/10/19 07:51:35 [emerg] 43#43: bind() to 0.0.0.0:80 failed (98: Address already in use)
+2019/10/19 07:51:35 [emerg] 43#43: bind() to 0.0.0.0:80 failed (98: Address already in use)
+2019/10/19 07:51:35 [emerg] 43#43: still could not bind()

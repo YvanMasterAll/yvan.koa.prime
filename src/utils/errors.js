@@ -115,7 +115,7 @@ class Unknown extends iError {
     }
 }
 
-module.exports = {
+export {
     iError,
     AuthFailed,
     ParamsIllegal,

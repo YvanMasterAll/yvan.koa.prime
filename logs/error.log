@@ -1,0 +1,1 @@
+(node:29025) [SEQUELIZE0002] DeprecationWarning: The logging-option should be either a function or false. Default: console.log

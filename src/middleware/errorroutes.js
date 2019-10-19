@@ -1,6 +1,6 @@
 const errors = require('../utils/errors')
 
-module.exports = function() {
+export default function() {
     return function (ctx, next) {
         return next().then(function() {
             switch (ctx.status) {

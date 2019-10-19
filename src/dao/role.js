@@ -207,7 +207,7 @@ class RoleDao {
                     let rd = new Roles_Depts()
                     rd.role_id = id
                     rd.dept_id = d
-                    await rm.save({transaction})
+                    await rd.save({transaction})
                 }
             })
         }, () => { throw new global.errs.DBError("数据库操作异常") })

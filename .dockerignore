@@ -1,0 +1,17 @@
+.dockerignore
+.git
+.gitignore
+.prettierrc
+.vscode
+app
+docker-compose.yml
+Dockerfile
+gulpfile.js
+logs
+nginx
+node_modules
+package-lock.json
+pm2.json
+sql
+src
+webpack.config.js

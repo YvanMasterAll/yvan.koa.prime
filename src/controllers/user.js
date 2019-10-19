@@ -53,7 +53,7 @@ export const add = async (ctx, next) => {
     await UserDao.validate_job(job, dept)
     await UserDao.validate_roles(roleids, isadmin, level)
     // 开始事务
-    await UserDao.user_add({name, password, state, phone, email, dept, job})
+    await UserDao.user_add({name, password, state, phone, email, dept, job}, roleids)
 
     ctx.resolve.success.bind(ctx)("成功添加用户")
 }
@@ -92,7 +92,7 @@ export const edit = async (ctx, next) => {
         name: name, email: email, phone: phone, dept_id: dept, job_id: job, state: state, 
         update_at: new Date() // 更新时间
     }
-    await UserDao.user_edit(params, password, roleids)
+    await UserDao.user_edit(id, params, password, roleids)
 
     ctx.resolve.success.bind(ctx)("用户编辑成功")
 }

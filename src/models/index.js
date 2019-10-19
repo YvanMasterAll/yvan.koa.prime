@@ -1,6 +1,3 @@
-import Book from './book'
-import Student from './student'
-import Record from './record'
 import User from './user'
 import Role from './role'
 import Dept from './dept'
@@ -13,8 +10,8 @@ import Roles_Permissions from './roles_permissions'
 import Users_Roles from './users_roles'
 import Log from './log'
 
-module.exports = { 
-    Book, Student, Record, User, Role, Dept, Job, Menu, Permission, Roles_Depts, Roles_Menus, Roles_Permissions, Users_Roles, Log
+export { 
+    User, Role, Dept, Job, Menu, Permission, Roles_Depts, Roles_Menus, Roles_Permissions, Users_Roles, Log
 }
 
 // 测试数据库查询
@@ -158,7 +155,7 @@ function initData() {
     // // data = [ 
     // //     [1, '系统管理', null, 0, 1], [2, '用户管理', 'system/user/index', 1, 2], [3, '角色管理', 'system/role/index', 1, 3], [4, '权限管理', 'system/permission/index', 1, 4], [5, '菜单管理', 'system/menu/index', 1, 5], [6, '系统监控', null, 0, 10], [7, '操作日志', 'monitor/log/index', 6, 11], [8, '系统缓存', 'monitor/redis/index', 6, 13], [9, 'SQL监控', 'monitor/sql/index', 6, 14], [10, '组件管理', null, 0, 50], [11, '图标库', 'components/IconSelect', 10, 51], [14, '邮件工具', 'tools/email/index', 36, 24], [15, '富文本', 'components/Editor', 10, 52], [16, '图床管理', 'tools/picture/index', 36, 25], [17, '项目地址', null, 0, 0], [18, '存储管理', 'tools/storage/index', 36, 23], [19, '支付宝工具', 'tools/aliPay/index', 36, 27], [21, '多级菜单', null, 0, 900], [22, '二级菜单1', 'nested/menu1/index', 21, 999], [23, '二级菜单2', 'nested/menu2/index', 21, 999], [24, '三级菜单1', 'nested/menu1/menu1-1', 22, 999], [27, '三级菜单2', 'nested/menu1/menu1-2', 22, 999], [28, '定时任务', 'system/timing/index', 36, 21], [30, '代码生成', 'generator/index', 36, 22], [32, '异常日志', 'monitor/log/errorLog', 6, 12], [33, 'Markdown', 'components/MarkDown', 10, 53], [34, 'Yaml编辑器', 'components/YamlEdit', 10, 54], [35, '部门管理', 'system/dept/index', 1, 6], [36, '系统工具', null, 0, 20], [37, '岗位管理', 'system/job/index', 1, 7], [38, '接口文档', 'tools/swagger/index', 36, 26], [39, '字典管理', 'system/dict/index', 1, 8]
     // // ]
-    // let data = global.enums.menus
+    // data = global.enums.menus
 
     // data.forEach(async d => {
     //     let menu = new Menu()
@@ -221,7 +218,7 @@ function initData() {
     //     await roles_depts.save()
     // })
 
-    // DATA: 角色的菜单权限
+    // // DATA: 角色的菜单权限
     // data = [ 
     //     [1, 3], [2, 3], [3, 3], [4, 3], [5, 3], [6, 3], [8, 3], [9, 3], [10, 3], [11, 3], [14, 3], [15, 3], [16, 3], [17, 3], [18, 3], [19, 3], [21, 3], [22, 3], [23, 3], [24, 3], [27, 3], [28, 3], [30, 3], [33, 3], [34, 3], [35, 3], [36, 3], [37, 3], [38, 3], [39, 3], [1, 2], [2, 2],
     // ]

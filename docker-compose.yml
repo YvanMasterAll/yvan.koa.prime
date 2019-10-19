@@ -1,0 +1,45 @@
+version: '3'
+services:
+  redis:
+    image: redis:5.0.6
+    container_name: redis
+    hostname: redis
+    ports:
+      - 6378:6379
+    restart: always
+    command: redis-server --requirepass zzzk
+
+  node:
+    build: .
+    container_name: node
+    hostname: node
+    ports:
+      - 3001:3001
+    restart: always
+    command: npm run production
+    links: 
+      - redis:redis
+    external_links:
+      - postgresql:postgresql
+    networks:
+      - default
+      - zzzk
+
+  nginx:
+    image: nginx:1.17.4
+    container_name: nginx
+    hostname: nginx
+    ports:
+      - 8080:80
+      - 443:443
+    restart: always
+    volumes:
+      - ./nginx/conf:/etc/nginx/conf.d
+      - ./nginx/logs:/var/log/nginx
+      - ./app:/usr/share/nginx/html
+    links:
+      - node:node
+
+networks:
+  zzzk:
+    external: true

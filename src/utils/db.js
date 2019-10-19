@@ -38,7 +38,7 @@ async function doTransaction(exec, error) {
     }
 }
 
-module.exports = {
+export {
     sequelize,
     doTransaction
 }

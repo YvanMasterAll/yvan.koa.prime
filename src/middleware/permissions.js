@@ -76,23 +76,20 @@ const permissionCheck = function (route) {
         }
         
         let path = route.path.replace(global.config.app.prefix, '') // 去除前缀
-        let pass = false
-        perms.forEach(d => {
-            let _path = _.lowerCase(d.path)
-            if (_path === path || path.startWith(_path)) {
-                pass = true
-            }
+        let cool = perms.some(p => {
+            return p.path === path
+            // return p.path === path || path.startWith(p.path)
         })
         
-        if (!pass) {
-            throw new global.errs.NoPermission()
+        if (!cool) {
+            throw new global.errs.NoPermission("缺少访问的权限")
         }
         
         return next()
     }
 }
 
-module.exports = {
+export {
     permsread,
     permissionCheck,
     isRevoked
