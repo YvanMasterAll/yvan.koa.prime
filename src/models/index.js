@@ -233,7 +233,7 @@ function initData() {
 
     // // DATA: 角色的资源权限
     // data = [ 
-    //     [1, 1], [2, 3], [2, 4], [2, 5], [3, 3], [3, 8], [3, 14], [3, 20], [3, 23], [3, 24], [3, 25], [3, 26], [3, 30], [3, 36], [3, 41], [3, 46], [3, 51],
+    //     [1, 1], [2, 3], [2, 4], [2, 5], [3, 3], [3, 8], [3, 14], [3, 30], [3, 33], [3, 34], [3, 35], [3, 36], [3, 38], [3, 43], [3, 16], [3, 21], [3, 48],
     // ]
 
     // data.forEach(async d => {
@@ -259,9 +259,9 @@ function initData() {
 
     // // DATA: 用户
     // data = [
-    //     [1, 'admin@eladmin.net', 'e10adc3949ba59abbe56e057f20f883e', 'admin', 4, '18888888888', 6],
-    //     [2, 'test@eladmin.net', 'e10adc3949ba59abbe56e057f20f883e', 'test', 4, '17777777777', 5],
-    //     [3, 'hr@eladmin.net', 'e10adc3949ba59abbe56e057f20f883e', 'hr', 10, '15555555555', 3]
+    //     [1, 'admin@eladmin.net', 'admin', 'admin', 4, '18888888888', 6],
+    //     [2, 'test@eladmin.net', 'test', 'test', 4, '17777777777', 5],
+    //     [3, 'hr@eladmin.net', 'hr', 'hr', 10, '15555555555', 3]
     // ]
 
     // data.forEach(async d => {
@@ -276,6 +276,10 @@ function initData() {
     
     //     await user.save()
     // })
+
+    // // 重置缓存
+    // import { RedisDao } from '../dao'
+    // RedisDao.timeline_resetall()
 }
 
 initData()

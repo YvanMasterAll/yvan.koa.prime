@@ -210,6 +210,12 @@ class RedisDao {
         await redis.set(key, new Date().getTime(), global.config.app.expiresIn_redis)
     }
 
+    static async timeline_resetall() {
+        for (var i in global.config.rkeys) {
+            await redis.set(global.config.rkeys[i], new Date().getTime(), global.config.app.expiresIn_redis)
+        }
+    }
+
     /// 判断时间线
     static validate_timeline(time, timelines) {
         let cool = true

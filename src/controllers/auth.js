@@ -29,6 +29,7 @@ export const signin = async (ctx, next) => {
             password: password,
             ...global.enums.where
         },
+        attributes: { exclude: ['password'] },
         raw: true
     })
     if (!user) {
@@ -57,10 +58,10 @@ export const signin = async (ctx, next) => {
         }
     })
 
-    delete user.password
     user.roles = userRoles
     user.menus = menus
     user.perms = perms
+    user.avatar = user.avatar.toUrl()
 
     // 生成token
     let token = utils.getToken({

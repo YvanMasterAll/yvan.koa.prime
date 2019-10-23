@@ -1,5 +1,5 @@
 class iError extends Error {
-    constructor(msg = '服务器异常', code = 500) {
+    constructor(msg = '请求错误', code = 998) {
         super()
 
         this.code = code
@@ -106,6 +106,15 @@ class TokenError extends iError {
     }
 }
 
+class UploadFailed extends iError {
+    constructor(msg) {
+        super()
+
+        this.code = 412
+        this.msg = msg || '文件上传异常'
+    }
+}
+
 class Unknown extends iError {
     constructor(msg) {
         super()
@@ -129,4 +138,5 @@ export {
     UserRoleUnMatch,
     NoPermission,
     TokenError,
+    UploadFailed
 }

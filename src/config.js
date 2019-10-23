@@ -26,7 +26,7 @@ const config = {
         password: 'zzcloud',            //数据库密码
         database: 'zzcloud2',           //数据库名称
         // prefix: 'api_',              //表前缀, 如"api_"
-        avatar: 'https://source.unsplash.com/zBmcEepz5FQ/256x256' //默认头像
+        avatar: 'images/avatar/default.png' //默认头像
     },
     // db: {
     //     host: 'postgresql',             //服务器地址
@@ -81,5 +81,14 @@ global.config = config
 const errors = require('./utils/errors')
 global.errs = errors
 global.enums = enums
+
+// 检查路径
+function checkDirectory(path) {
+    let cool = fs.existsSync(path)
+    if (!cool) { fs.mkdirSync(path) }
+}
+['assets', 'assets/images', 'assets/images/avatar'].forEach(d => {
+    checkDirectory(d)
+})
 
 export default config

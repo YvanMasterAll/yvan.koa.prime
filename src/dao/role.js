@@ -26,12 +26,12 @@ class RoleDao {
             // order: [['id', 'DESC']],
             offset: ctx.limit*ctx.pagenum,
             limit: ctx.limit,
-            distinct: true
+            distinct: true // 只计算主表数量
         })
         let count = result.count
         let results = result.rows.map(d => { return d.toJSON() })
 
-        return {count, results}
+        return {results, count}
     }
 
     /// 判断角色存在

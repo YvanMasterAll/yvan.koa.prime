@@ -1,6 +1,5 @@
-import { User, Users_Roles, Role, Dept, Job } from '../models'
-import { UserDao } from '../dao'
-const { doTransaction } = require('../utils/db')
+import { User } from '../models'
+import { UserDao, CommonDao } from '../dao'
 const validator = require('validator')
 import utils from '../utils'
 const Sequelize = require('sequelize')
@@ -49,8 +48,8 @@ export const add = async (ctx, next) => {
     }
     if (!validator.isMobilePhone(phone, "zh-CN")) { throw new global.errs.ParamsIllegal("请输入合法的电话号码") }
     if (!validator.isEmail(email)) { throw new global.errs.ParamsIllegal("请输入合法的邮箱地址") }
-    await UserDao.validate_dept(dept)
-    await UserDao.validate_job(job, dept)
+    await CommonDao.validate_dept(dept)
+    await CommonDao.validate_job(job, dept)
     await UserDao.validate_roles(roleids, isadmin, level)
     // 开始事务
     await UserDao.user_add({name, password, state, phone, email, dept, job}, roleids)
@@ -83,8 +82,8 @@ export const edit = async (ctx, next) => {
     if (!validator.isMobilePhone(phone, "zh-CN")) { throw new global.errs.ParamsIllegal("请输入合法的电话号码") }
     if (!validator.isEmail(email)) { throw new global.errs.ParamsIllegal("请输入合法的邮箱地址") }
     await UserDao.validate_user(id, isadmin, ctx.state._user.scope, ctx.state._user.roleids)
-    await UserDao.validate_dept(dept)
-    await UserDao.validate_job(job, dept)
+    await CommonDao.validate_dept(dept)
+    await CommonDao.validate_job(job, dept)
     await UserDao.validate_roles(roleids, isadmin, level)
 
     // 开始事务
@@ -113,4 +112,86 @@ export const del = async (ctx, next) => {
     await UserDao.user_del(id)
 
     ctx.resolve.success.bind(ctx)("用户删除成功")
+}
+
+/// 用户信息
+export const profile = async (ctx, next) => {
+    let id = ctx.state._user.id
+    let user = await UserDao.user_profile(id)
+    if (!user) {
+        throw new global.errs.NotFound("无法查找用户信息")
+    }
+
+    ctx.resolve.json.bind(ctx)(user)
+}
+
+/// 更新头像
+export const update_avatar = async (ctx, next) => {
+    let upload = ctx.req.file
+    if (!upload) { throw new global.errs.UploadFailed() } 
+    let path = upload.path.replace('assets/', '')
+
+    await UserDao.update_avatar(ctx.state._user.id, path)
+    
+    ctx.resolve.json.bind(ctx)(path.toUrl(), "成功更换头像")
+}
+
+/// 更新邮箱
+export const update_email = async (ctx, next) => {
+    let id = ctx.state._user.id
+    // 读取参数
+    let password = ctx.request.query.password
+    let email = ctx.request.query.email
+    // 参数验证
+    if (!email || !password) { throw new global.errs.ParamsIllegal() }
+    if (!validator.isEmail(email)) { throw new global.errs.ParamsIllegal("请输入合法的邮箱地址") }
+    // 查找用户
+    let user = (await User.findOne({
+        where: {id, password, ...global.enums.where},
+        raw: true
+    }))
+    if (!user) {
+        throw new global.errs.ParamsIllegal("用户密码验证失败")
+    }
+    // 验证信息
+    if (user.email === email) {
+        throw new global.errs.ParamsIllegal("要修改的邮箱和原邮箱相同")
+    }
+    // 更新邮箱
+    await User.update({
+        email: email,
+        update_at: new Date()
+    }, {where: {id}})
+
+    ctx.resolve.success.bind(ctx)("成功更换邮箱")
+}
+
+/// 更新密码
+export const update_password = async (ctx, next) => {
+    let id = ctx.state._user.id
+    // 读取参数
+    let old = ctx.request.query.old
+    let password = ctx.request.query.password
+    // 参数验证
+    if (!old || !password) { throw new global.errs.ParamsIllegal() }
+    if (validator.isEmpty(password, { ignore_whitespace: true })) { throw new global.errs.ParamsIllegal("请输入规范的密码") }
+    // 查找用户
+    let user = (await User.findOne({
+        where: {id, password: old, ...global.enums.where},
+        raw: true
+    }))
+    if (!user) {
+        throw new global.errs.ParamsIllegal("用户密码验证失败")
+    }
+    // 验证信息
+    if (user.passowrd === password) {
+        throw new global.errs.ParamsIllegal("要修改的密码和原密码相同")
+    }
+    // 更新邮箱
+    await User.update({
+        password: password,
+        update_at: new Date()
+    }, {where: {id}})
+
+    ctx.resolve.success.bind(ctx)("成功更换密码")
 }

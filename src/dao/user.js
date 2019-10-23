@@ -19,31 +19,6 @@ class UserDao {
         })
     }
 
-    /// 验证部门有效性
-    static async validate_dept(id) {
-        let dept = (await Dept.findOne({
-            where: {
-                id: id, 
-                ...global.enums.where
-            },
-            raw: true
-        }))
-        if (!dept) { throw new global.errs.ParamsIllegal("请选择正确的部门") }
-    }
-
-    /// 验证岗位有效性
-    static async validate_job(id, dept_id) {
-        let job = (await Job.findOne({
-            where: {
-                id: id, 
-                dept_id: dept_id,
-                ...global.enums.where
-            },
-            raw: true
-        }))
-        if (!job) { throw new global.errs.ParamsIllegal("请选择正确的岗位·") }
-    }
-
     /// 验证角色有效性
     static async validate_roles(roleids, isadmin, level) {
         let roles = await CommonDao.roles()
@@ -190,7 +165,7 @@ class UserDao {
             }], where: { ...global.enums._where },
             offset: ctx.limit*ctx.pagenum,
             limit: ctx.limit,
-            distinct: true
+            distinct: true // 只计算主表数量
         }))
         let count = result.count
         let results = result.rows.map(d => { return d.toJSON() }).map(d => {
@@ -283,6 +258,34 @@ class UserDao {
             await Users_Roles.destroy({ where: {user_id: id}, transaction })
             // await Users_Roles.update({ state: global.enums.state.del, update_at: new Date() }, { where: {user_id: id}, transaction })
         }, () => { throw new global.errs.DBError("数据库操作异常") })
+    }
+
+    /// 用户信息
+    static async user_profile(id) {
+        let result = (await User.findOne({
+            where: {id, ...global.enums.where},
+            attributes: { exclude: ['password'] },
+            include: [{
+                association: User.belongsTo(Dept, {foreignKey: 'dept_id', targetKey: 'id', constraints: false}),
+                required: true,
+                where: { ...global.enums.where }
+            },{
+                association: User.belongsTo(Job, {foreignKey: 'job_id', targetKey: 'id', constraints: false}),
+                required: true,
+                where: { ...global.enums.where }
+            }]
+        }))
+        if (result) {
+            result = result.toJSON()
+            result.avatar = result.avatar.toUrl()
+        }
+        
+        return result
+    }
+
+    /// 更新用户头像
+    static async update_avatar(id, path) {
+        await User.update({avatar: path, update_at: new Date()}, {where: {id}})
     }
 }
 

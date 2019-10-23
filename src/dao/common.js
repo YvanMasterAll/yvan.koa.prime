@@ -45,7 +45,7 @@ class CommonDao {
         let depts = await RedisDao.dept_tree()
         if (depts) { return depts }
         
-        let results = (await Dept.findAll({where: {...global.enums.where}})).map(d => d.toJSON()).map(d => { return {...d, label: d.name} })
+        let results = (await this.depts()).map(d => { return {...d, label: d.name} })
 
         depts = this.mergeRelateData(results)
         // 本地缓存
@@ -55,31 +55,31 @@ class CommonDao {
     }
 
     /// 合并关联数据, 重组具有父子关系的数据, 像部门数据, 权限数据
-    static mergeRelateData(depts) {
-        let _depts = []
-        depts.forEach(r => {
+    static mergeRelateData(data) {
+        let _data = []
+        data.forEach(r => {
             let group = []
             let current = r
             // 获取数据组
             group.push(current)
             while (current && current.pid !== 0) { 
-                current = depts.filter(r => r.id === current.pid)[0]
+                current = data.filter(r => r.id === current.pid)[0]
                 if (current) { group.push(current) }
             }
             // 构建数据链
-            let node = _depts // 操作节点
+            let node = _data // 操作节点
             for (let i = group.length - 1; i >= 0; i --) {
-                let dept = group[i] // 要加入的节点
-                let _dept = node.filter(r => r.id === dept.id)[0]
-                if (!_dept) { node.push(dept) } // 如果节点不存在则加入
+                let d = group[i] // 要加入的节点
+                let _d = node.filter(r => r.id === d.id)[0]
+                if (!_d) { node.push(d) } // 如果节点不存在则加入
                 if (i !== 0) { // 避免添加空的children, 因为children属性可以用来判断有没有子节点
-                    if (!dept.children) { dept.children = [] }
-                    node = dept.children // 更换操作节点
+                    if (!d.children) { d.children = [] }
+                    node = d.children // 更换操作节点
                 }
             }
         })
         
-        return _depts
+        return _data
     }
 
     /// 获取部门和它的子部门
@@ -177,6 +177,31 @@ class CommonDao {
         await RedisDao.menu_all_set(menus)
 
         return menus
+    }
+
+    /// 验证部门有效性
+    static async validate_dept(id) {
+        let dept = (await Dept.findOne({
+            where: {
+                id: id, 
+                ...global.enums.where
+            },
+            raw: true
+        }))
+        if (!dept) { throw new global.errs.ParamsIllegal("请选择正确的部门") }
+    }
+
+    /// 验证岗位有效性
+    static async validate_job(id, dept_id) {
+        let job = (await Job.findOne({
+            where: {
+                id: id, 
+                dept_id: dept_id,
+                ...global.enums.where
+            },
+            raw: true
+        }))
+        if (!job) { throw new global.errs.ParamsIllegal("请选择正确的岗位·") }
     }
 }
 

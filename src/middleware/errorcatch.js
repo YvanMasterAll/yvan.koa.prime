@@ -26,7 +26,7 @@ export default function () {
 
         return next().then(function() {
             if (ctx.request_log.description) { // 记录操作日志
-                ctx.request_log.type = ctx.status === 200 ? 'success':'failed'
+                ctx.request_log.log_type = ctx.status === 200 ? 'success':'failed'
                 ctx.request_log.time = new Date().getTime() - ctx.request_log.create_at.getTime()
                 ctx.request_log.save() 
             }
@@ -45,18 +45,22 @@ export default function () {
             } else if (err instanceof JsonWebTokenError) {
                 ctx.resolve.error.bind(ctx)(new global.errs.TokenError)
             } else {
-                switch (err.status) { 
-                    case 401:
-                        ctx.resolve.error.bind(ctx)(new global.errs.AuthFailed)
-                        break
-                    default:
-                        console.log(err)
-                        ctx.resolve.error.bind(ctx)(new global.errs.Unknown)
+                if (err.code && global.enums.koaMulterErrs.includes(err.code)) { // 文件上传异常
+                    ctx.resolve.error.bind(ctx)(new global.errs.UploadFailed(err.code))
+                } else {
+                    switch (err.status) { 
+                        case 401:
+                            ctx.resolve.error.bind(ctx)(new global.errs.AuthFailed)
+                            break
+                        default:
+                            console.log(err)
+                            ctx.resolve.error.bind(ctx)(new global.errs.Unknown)
+                    }
                 }
             }
             // 记录异常日志
             if (ctx.request_log.description) {
-                ctx.request_log.type = 'error'
+                ctx.request_log.log_type = 'error'
                 let err_detail = JSON.stringify(err)
                 if (err_detail.length > 200) { err_detail = err_detail.substr(0, 200) }
                 ctx.request_log.exception_detail = err_detail

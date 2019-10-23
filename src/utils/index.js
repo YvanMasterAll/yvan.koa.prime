@@ -51,9 +51,13 @@ const utils = {
 }
 
 /// 扩展
-String.prototype.startWith = function(str){    
+String.prototype.startWith = function(str) {     
     var reg = new RegExp('^' + str)
     return reg.test(this)
-} 
+}
+String.prototype.toUrl = function() {  
+    if (this.startWith('http')) { return this } 
+    return global.config.sys.api_server_type + global.config.sys.api_server_host + ":" + global.config.sys.api_server_port + '/' + this
+}
 
 export default utils

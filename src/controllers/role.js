@@ -12,7 +12,7 @@ export const list = async (ctx, next) => {
     let where = { }
     if (name) { where.name = {[Sequelize.Op.like]: name + '%'} }
     // 查询数据
-    let {count, results} = await RoleDao.role_list(where, ctx)
+    let {results, count} = await RoleDao.role_list(where, ctx)
 
     ctx.resolve.json.bind(ctx)(results, '操作成功', count)
 }
@@ -73,8 +73,12 @@ export const edit = async (ctx, next) => {
         }
     }
     // 验证角色
-    if (!(await RoleDao.role_exists({name, id}))) {
+    if (!(await RoleDao.role_exists({id}))) {
         throw new global.errs.NotFound("要编辑的角色不存在")
+    }
+    // 判断重名
+    if (await RoleDao.role_exists({name})) {
+        throw new global.errs.Exists("已经存在同名的角色")
     }
     // 超管才能编辑超管角色
     if (!ctx.state._user.isadmin && UserDao.isAdminRole(id)) {
