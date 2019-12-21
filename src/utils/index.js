@@ -2,7 +2,31 @@ const jwt = require('jsonwebtoken')
 var _ = require('lodash')
 
 const utils = {
-    getArrayParam: function(key) {      // 获取数组参数
+    // 处理ctx响应数据
+    resolve: {
+        success: function (msg = '操作成功', code = 200) {
+            this.body = {
+                code,
+                msg
+            }
+        },
+        json: function (data, msg = '操作成功', total, code = 200) {
+            this.body = {
+                code,
+                msg,
+                data,
+                total
+            }
+        },
+        error: function (err) {
+            this.body = {
+                "code": err.code,
+                "msg": err.msg
+            }
+        }
+    },
+    // 获取ctx数组参数
+    getArrayParam: function(key) {      
         let arr = this.request.query[key + '[]']
         if (arr) {
             if (!(arr instanceof Array)) {
@@ -12,7 +36,8 @@ const utils = {
 
         return arr
     },
-    setpage: function(ctx) {            // 设置分页
+    // 设置ctx分页
+    setpage: function(ctx) {            
         let pagenum = 0
         let limit = global.config.app.limit
         let total = 0
@@ -29,14 +54,17 @@ const utils = {
         ctx.limit = limit
         ctx.total = total
     },
-    getToken(payload = {}) {            // 生成token
+    // 生成token
+    getToken(payload = {}) {            
         return jwt.sign(payload, global.config.app.secretkey, {
             expiresIn: global.config.app.expiresIn
         })
     },
-    getJWTPayload(token) {              // 通过token获取json数据
+    // 通过token取到json数据
+    getJWTPayload(token) {              
         return jwt.verify(token.split(' ')[1], global.config.app.secretkey);
     },
+    // 状态检查
     stateValid(state, value) {
         let flag = false
         _.forEach(state, function(v, key) {

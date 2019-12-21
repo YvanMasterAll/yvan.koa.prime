@@ -12,7 +12,7 @@
     "gulp": "gulp",
     "pm2": "pm2 start pm2.json",
     "production": "node build/pro-server",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --harmony --require babel-register"
   },
   "dependencies": {
     "ioredis": "^4.14.1",
@@ -48,13 +48,16 @@
     "babel-preset-es2015-node5": "^1.2.0",
     "babel-preset-stage-3": "^6.24.1",
     "babel-register": "^6.26.0",
+    "chai": "^4.2.0",
     "externals-dependencies": "^1.0.4",
-    "nodemon": "^1.19.1",
-    "webpack": "4.16.5",
-    "webpack-cli": "3.1.0",
     "gulp": "^4.0.2",
+    "gulp-concat": "^2.6.1",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-terser": "^1.2.0",
-    "gulp-concat": "^2.6.1"
+    "mocha": "^6.2.2",
+    "nodemon": "^1.19.1",
+    "supertest": "^4.0.2",
+    "webpack": "4.16.5",
+    "webpack-cli": "3.1.0"
   }
 }

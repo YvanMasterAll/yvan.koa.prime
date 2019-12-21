@@ -7,6 +7,12 @@ const router = new KoaRouter()
 
 let meta = { auth: true }
 
+/// 注意几个细节
+/// 1.这里的auth控制的是资源权限，不是认证权限
+/// 2.加了desc参数的接口，表示需要记录操作日志
+/// 3.加了upload参数的接口，代表这是一个文件上传接口
+/// 4.加了recache参数的接口，代表这个接口更新的数据可能会影响缓存，所以为了同步缓存，在接口处理完后需要清除缓存
+
 const routes = {
     /// 通用模块
     depts: { method: 'get', path: '/api/common/depts', meta: { ...meta, auth: false }, control: controllers.common.depts },

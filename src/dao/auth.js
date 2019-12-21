@@ -1,4 +1,4 @@
-import { Role, Roles_Permissions, Users_Roles, Permission, Roles_Menus, Menu } from '../models'
+import { User, Role, Roles_Permissions, Users_Roles, Permission, Roles_Menus, Menu } from '../models'
 const Sequelize = require('sequelize')
 import CommonDao from './common'
 
@@ -6,18 +6,20 @@ class AuthDao {
 
     /// 获取用户角色
     static async user_roles(id) {
-        return (await Users_Roles.findAll({
+        let user = await User.findOne({
             include: [{
-                model: Role,
+                association: User.belongsToMany(Role, {through: Users_Roles, foreignKey: 'user_id', constraints: false}),
                 required: true,
                 where: { ...global.enums.where }
             }], where: {
-                user_id: id,
+                id: id,
                 ...global.enums.where
             }
-        })).map(d => {
-            return d.toJSON()
-        }).map(d => d.Role)
+        })
+        if (user !== null) {
+            return user.toJSON().Roles
+        }
+        return []
     }
 
     /// 获取角色菜单
@@ -96,7 +98,8 @@ class AuthDao {
         })
     }
 
-    /// 整理角色权限, 拼接权限路径
+    /// 整理资源权限, 拼接权限路径
+    /// 比如说我有用户查询的权限，那么拼接出来的路径应该就是：user/list
     static async splicePermissions(data) {
         let results = await CommonDao.permissions()
         let perms = []

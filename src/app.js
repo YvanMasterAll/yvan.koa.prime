@@ -9,7 +9,7 @@ import path from 'path'
 import config from './config'
 import errorcatch from './middleware/errorcatch'
 import errorroutes from './middleware/errorroutes'
-import { permsread, isRevoked } from './middleware/permissions'
+import { permissionFilter, isRevoked } from './middleware/permissions'
 import mainroutes, { jwt_exclude } from './routes/main'
 
 const app = new Koa()
@@ -29,8 +29,8 @@ app.use((ctx, next) => {
     }
     ctx.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
     ctx.set('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS')
-    ctx.set('Access-Control-Allow-Credentials', true) //允许带上cookie
-    ctx.set('Access-Control-Expose-Headers', 'Authorization') //允许响应头携带认证信息
+    ctx.set('Access-Control-Allow-Credentials', true) // 允许带上cookie
+    ctx.set('Access-Control-Expose-Headers', 'Authorization') // 允许响应头携带认证信息
 
     return next()
 })
@@ -48,7 +48,7 @@ app.use((ctx, next) => {
 }).unless({
     path: jwt_exclude
 }))
-.use(permsread())
+.use(permissionFilter())
 .use(mainroutes.routes(), mainroutes.allowedMethods())
 
 // logger

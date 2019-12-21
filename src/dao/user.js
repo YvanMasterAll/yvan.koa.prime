@@ -49,7 +49,7 @@ class UserDao {
     }
 
     /// 判断用户是否为超管
-    // TODO: 这里的判断还不太严谨, 仅仅判断id为1的角色就是超管, 因为超管这个角色是不能更改的, 所以权限这里没有务必判断
+    // TODO: 这里的判断还不够严谨, 仅仅判断id为1的角色就是超管, 因为超管这个角色是不能更改的, 所以权限这里没有判断
     static async isAdmin(id, roleids, perms) {
         if (!roleids) {
             roleids = await this.user_roles(id)
@@ -79,7 +79,7 @@ class UserDao {
 
     /// 验证用户有效性
     static async validate_user(id, isadmin, scope, roleids) {
-        if (!roleids) { // 简单验证用户是否存在
+        if (!roleids) { // 验证用户是否存在
             let user = (await User.findOne({
                 where: {
                     id: id, 
@@ -120,17 +120,17 @@ class UserDao {
             where.role.level = { [Sequelize.Op.gt]: level } // 角色级别约束
         }
         if (dept) { // 部门查询条件
-            let depts = await CommonDao.depts_children([dept])
+            let depts = await CommonDao.depts_withChildren([dept])
             where.user.dept_id = { [Sequelize.Op.in]: depts.map(d => d.id) }
         }
         if (!isadmin && scope === global.enums.scope.diy) { // 部门约束
             // 查询部门权限, 包括子部门
             let scope_deptids = (await this.roles_depts(roleids)).map(d => d.dept_id)
-            let scope_depts = await CommonDao.depts_children(scope_deptids)
+            let scope_depts = await CommonDao.depts_withChildren(scope_deptids)
             let _depts = scope_depts
             if (dept) { // 部门条件
                 _depts = []
-                let depts = await CommonDao.depts_children([dept])
+                let depts = await CommonDao.depts_withChildren([dept])
                 depts.forEach(d => {
                     if (scope_depts.filter(d2 => d2.id === d.id).length > 0) {
                         _depts.push(d)

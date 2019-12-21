@@ -29,7 +29,6 @@ async function doTransaction(exec, error) {
     try {
         transaction = await sequelize.transaction()
         await exec(transaction)
-
         await transaction.commit()
     } catch (err) {
         console.log(err)

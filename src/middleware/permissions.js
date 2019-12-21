@@ -7,7 +7,7 @@ import { iError } from '../utils/errors'
 const isRevoked = async (ctx, token, json) => {
     // console.log(ctx.headers.authorization)
     let user = utils.getJWTPayload("Bearer " + json)
-    // 判断用户是否已经登出
+    // 判断用户是否已经登出，如果已经登录，跳过jwt验证
     if (!(await RedisDao.user_tokened_get(user.id))) {
         throw new global.errs.AuthFailed("用户已经登出")
     }
@@ -18,7 +18,7 @@ const isRevoked = async (ctx, token, json) => {
 }
 
 /// 读取用户权限
-const permsread = function () {
+const permissionFilter = function () {
     return async function (ctx, next) {
         // 保存登录用户信息
         if (ctx.state.user) {
@@ -26,7 +26,6 @@ const permsread = function () {
                 let user = ctx.state.user
                 // 日志信息
                 ctx.request_log.name = user.name
-                // TODO: 判断用户状态是否正常
                 // 读取角色权限
                 user.roles = await AuthDao.user_roles(user.id)
                 user.roleids = user.roles.map(r => r.id)
@@ -90,7 +89,7 @@ const permissionCheck = function (route) {
 }
 
 export {
-    permsread,
+    permissionFilter,
     permissionCheck,
     isRevoked
 }

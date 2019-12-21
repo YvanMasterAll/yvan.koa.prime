@@ -44,7 +44,7 @@ class RoleDao {
 
     /// 编辑菜单权限
     static async menus_edit(id, menus) {
-        // 查询当前角色
+        // 查询当前的菜单权限
         let current_menus = (await Roles_Menus.findAll({
             where: {
                 role_id: id,
@@ -77,7 +77,7 @@ class RoleDao {
 
     /// 编辑资源权限
     static async permissions_edit(id, permissions) {
-        // 查询当前角色
+        // 查询当前的资源权限
         let current_permissions = (await Roles_Permissions.findAll({
             where: {
                 role_id: id,
@@ -153,7 +153,7 @@ class RoleDao {
 
     /// 编辑角色
     static async role_edit(id, name, level, scope, remark, depts) {
-        // 查询当前部门
+        // 查询角色所属的部门
         let current_depts = (await Roles_Depts.findAll({
             where: {
                 role_id: id,

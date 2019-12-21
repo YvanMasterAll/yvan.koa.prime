@@ -3,25 +3,30 @@ const Sequelize = require('sequelize')
 // 枚举常量
 
 const enums = {
-    state: {            // 数据状态
+    // 数据状态
+    state: {         
         on: 'on',
         off: 'off',
         del: 'del'
     },
     _state: ['on', 'off', 'del'],
-    scope: {            // 权限范围
+    // 权限范围
+    scope: {            
         all: 'all',     // 全部
         diy: 'diy',     // 自定义
         same: 'same'    // 本级
     },
-    where: {            // 悲观条件
+    // 悲观条件，只包含状态正常的数据
+    where: {            
         state: 'on'
     },
-    _where: {           // 乐观条件
+    // 乐观条件，只要不是被删除的数据都包含在内
+    _where: {           
         state: {
             [Sequelize.Op.notIn]: ['del']
         }
     },
+    // 文件上传异常的关键字眼
     koaMulterErrs: [
         'LIMIT_PART_COUNT',
         'LIMIT_FILE_SIZE',
@@ -31,6 +36,7 @@ const enums = {
         'LIMIT_FIELD_COUNT',
         'LIMIT_UNEXPECTED_FILE',
     ],
+    // 资源权限
     permissions: [
         { id: 1, name: '超级管理员', alias: 'admin', pid: 0 },
         { id: 2, name: '用户管理', alias: 'user', pid: 0 },
@@ -88,6 +94,7 @@ const enums = {
         { id: 55, name: '文件编辑', alias: 'LOCALSTORAGE_EDIT', pid: 52 },
         { id: 56, name: '文件删除', alias: 'LOCALSTORAGE_DELETE', pid:  52 }
     ],
+    // 菜单权限
     menus: [
         {id: 1, name: '系统管理', path: 'admin', pid: 0, sort: 1}, 
         {id: 2, name: '用户管理', path: 'admin/user', pid: 1, sort: 2}, 

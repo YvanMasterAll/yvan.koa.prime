@@ -1,5 +1,4 @@
 import { iError } from '../utils/errors'
-import resolve from '../utils/resolve'
 import { BaseError } from 'sequelize'
 import utils from '../utils'
 import { JsonWebTokenError } from 'jsonwebtoken'
@@ -8,9 +7,10 @@ import { RedisDao } from '../dao'
 
 export default function () {
     return function (ctx, next) {
-        // 为请求上下文添加结果处理函数
-        ctx.resolve = resolve
+        // 为ctx添加必要的处理函数
+        ctx.resolve = utils.resolve
         ctx.getarray = utils.getArrayParam
+        ctx.setpage = utils.setpage
         // 日志记录
         ctx.request_log = new Log()
         if (ctx.request.ips.length > 0) {
@@ -22,7 +22,7 @@ export default function () {
         ctx.request_log.method = ctx.request.method
         ctx.request_log.create_at = new Date()
         // 计算分页数据
-        utils.setpage(ctx)
+        ctx.setpage(ctx)
 
         return next().then(function() {
             if (ctx.request_log.description) { // 记录操作日志

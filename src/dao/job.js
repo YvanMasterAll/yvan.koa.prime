@@ -16,7 +16,7 @@ class JobDao {
         })
         let count = result.count
         let results = result.rows.map(d => { return d.toJSON() })
-        // 查找岗位的部门路径
+        // 查找岗位所在的部门，并取到部门路径
         let depts = await CommonDao.depts()
         results.map(async r => {
             let dept_path = ''
@@ -25,7 +25,7 @@ class JobDao {
                 dept_path = dept.name
                 while (dept && !(await DeptDao.isRootDept(null, dept))) {
                     dept = depts.filter(d => d.id === dept.pid)[0]
-                    if (!(await DeptDao.isRootDept(null, dept))) { // 根目录就不添加到路径中, 更美观
+                    if (!(await DeptDao.isRootDept(null, dept))) { // 根目录就不添加到路径中了, 更美观
                         dept_path = dept.name + '/' + dept_path
                     }
                 }

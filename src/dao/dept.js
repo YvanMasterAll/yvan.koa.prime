@@ -8,7 +8,7 @@ class DeptDao {
 
     /// 获取部门列表
     static async dept_list(where) {
-        if (_.isEmpty(where)) { // 如果查询条件为空
+        if (_.isEmpty(where)) { // 如果查询条件为空，直接返回部门树
             return await CommonDao.depts_tree()
         }
         
@@ -16,25 +16,25 @@ class DeptDao {
             where: { ...global.enums.where, ...where }
         }).map(d => { return d.toJSON() })
 
-        let fdata = []
+        let detps_dist = []
         let depts = await CommonDao.depts()
         if (results.length > 1) {
-            results.forEach(r => { // 部门去重, 去除父子关系
-                let group = []
-                let current = r
-                // 获取数据组
-                while (current && current.pid !== 0) { 
-                    current = depts.filter(r => r.id === current.pid)[0]
-                    if (current) { group.push(current.id) }
+            results.forEach(r => { // 部门去重
+                let path = []
+                let node = r
+                // 通过父子关系获取路径上所有的节点，不包含当前节点
+                while (node && node.pid !== 0) { 
+                    node = depts.filter(r => r.id === node.pid)[0]
+                    if (node) { path.push(node.id) }
                 }
-                let cool = group.some(g => results.filter(r => r.id === g).length > 0)
-                if (!cool) { fdata.push(r) }
+                let cool = path.some(g => results.filter(r => r.id === g).length > 0)
+                if (!cool) { detps_dist.push(r) }
             })
-        } else { fdata = results }
+        } else { detps_dist = results }
 
         let depts_tree = await CommonDao.depts_tree()
         let data = []
-        fdata.forEach(r => { // 查找部门树
+        detps_dist.forEach(r => { // 查找部门树
             function find(t) {
                 t.forEach(d => {
                     if (d.id === r.id) { 
@@ -74,7 +74,7 @@ class DeptDao {
         await Dept.update({ state: global.enums.state.del, update_at: new Date() }, { where: {id: id} })
     }
 
-    /// 判断根部门
+    /// 判断是否根部门
     static async isRootDept(id, dept) {
         if (dept) { return dept.pid === 0 }
         
@@ -85,7 +85,7 @@ class DeptDao {
         return root && root.id === id
     }
 
-    /// 判断部门存在
+    /// 判断部门是否存在
     static async dept_exists(where) {
         let count = await Dept.count({
             where: { ...where, ...global.enums.where }
@@ -93,9 +93,9 @@ class DeptDao {
         return (count > 0)
     }
 
-    /// 判断部门删除
+    /// 判断部门是否删除
     static async validate_dept_del(id) {
-        // 判断是否包含子部门
+        // 判断是否存在子部门
         let depts_tree = await CommonDao.depts_tree()
         let node = []
         function find(t) { // 查找部门树
