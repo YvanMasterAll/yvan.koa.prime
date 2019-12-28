@@ -6,7 +6,8 @@ import app from '../src/app'
 const assert = chai.assert
 const request = supertest(app.listen())
 
-/// 因为时间问题，单元测试写的比较少
+/// 因为时间问题，单元测试写的比较少，该测试文件是一个临时文件
+/// 命令行 > npm run test:test
 
 // 用户登录测试
 describe( '用户登录测试', () => {

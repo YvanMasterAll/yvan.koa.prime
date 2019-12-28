@@ -82,7 +82,7 @@ class AuthDao {
                 required: true,
                 where: { ...global.enums.where }
             }, {
-                association: Users_Roles.hasMany(Roles_Permissions, {foreignKey: 'role_id', targetKey: 'role_id', constraints: false}),
+                association: Users_Roles.hasMany(Roles_Permissions, {foreignKey: 'role_id', sourceKey: 'role_id', constraints: false}),
                 required: false,
                 include: [{
                     model: Permission,

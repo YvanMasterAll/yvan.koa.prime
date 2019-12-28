@@ -77,6 +77,16 @@ class UserDao {
         return id === 1
     }
 
+    /// 判断用户是否拥有处理工单的权限
+    static isTicketExecutor(perms) {
+        return perms.filter(p => p.id === 61).length > 0
+    }
+
+    /// 判断用户是否拥有工单管理的权限
+    static isTicketManager(perms) {
+        return perms.filter(p => p.id === 62).length > 0
+    }
+
     /// 验证用户有效性
     static async validate_user(id, isadmin, scope, roleids) {
         if (!roleids) { // 验证用户是否存在

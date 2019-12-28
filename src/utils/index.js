@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken')
+var moment = require('moment')
 var _ = require('lodash')
 
 const utils = {
@@ -76,6 +77,65 @@ const utils = {
 
         return flag
     }
+}
+
+/// 验证工单字段输入的合法性，返回有效输入
+/// ctx：请求内容，wk_fields：流程字段，流程内所有的字段，fields：状态字段，表示某个状态下显示和操作的字段
+utils.validate_wk_fields = function (ctx, wk_fields, fields) {
+    function validate_value (wk_field, value) { // 值验证
+        if (wk_field.type === global.enums.wk.field_type.int) {
+            return !isNaN(value*1)
+        } 
+        if (wk_field.type === global.enums.wk.field_type.float) {
+            return !isNaN(value*1)
+        } 
+        if (wk_field.type === global.enums.wk.field_type.date) {
+            return utils.isDateString(value)
+        } 
+        if (wk_field.type === global.enums.wk.field_type.select) {
+            let selects = wk_field.choice
+            return Object.values(selects).includes(value)
+        }
+        // TODO: 需要补充更多的验证
+        return true
+    }
+    let result = {}
+    for (var key in fields) {
+        let attribute = fields[key] // 读写属性
+        let wk_field = wk_fields.filter(f => f.key === key)[0]
+        if (attribute === global.enums.wk.field_attribute_type.optional) { // 可选属性
+            let value = ctx.request.query[key]
+            if (value && validate_value(wk_field, value)) {
+                result[key] = value // 添加到结果集
+            }
+        }
+        if (attribute === global.enums.wk.field_attribute_type.required) { // 必填属性
+            let value = ctx.request.query[key]
+            if (value && validate_value(wk_field, value)) {
+                result[key] = value // 添加到结果集
+            } else {
+                throw new global.errs.ParamsIllegal() // 输入不合法抛出异常
+            }
+        }
+    }
+
+    return result
+}
+
+utils.toDateString = function(date) {
+    let format = "YYYY-MM-DD HH:mm:ss"
+    if (date) {
+        return moment(date).format(format)
+    }
+    return moment().format(format)
+}
+utils.toDate = function(dateString) {
+    let format = "YYYY-MM-DD HH:mm:ss"
+
+    return moment(dateString, format)
+}
+utils.isDateString = function(dateString) {
+    return /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/.test(dateString)
 }
 
 /// 扩展

@@ -9,12 +9,12 @@ class RoleDao {
     static async role_list(where, ctx) {
         let result = await Role.findAndCountAll({
             include: [{
-                // association: Role.hasMany(Roles_Menus, {foreignKey: 'id', targetKey: 'role_id', constraints: false}),
+                // association: Role.hasMany(Roles_Menus, {foreignKey: 'id', sourceKey: 'role_id', constraints: false}),
                 association: Role.belongsToMany(Menu, {through: Roles_Menus, foreignKey: 'role_id', constraints: false}),
                 required: false,
                 where: { ...global.enums.where }
             }, {
-                // association: Role.hasMany(Roles_Permissions, {foreignKey: 'id', targetKey: 'role_id', constraints: false}),
+                // association: Role.hasMany(Roles_Permissions, {foreignKey: 'id', sourceKey: 'role_id', constraints: false}),
                 association: Role.belongsToMany(Permission, {through: Roles_Permissions, foreignKey: 'role_id', constraints: false}),
                 required: false,
                 where: { ...global.enums.where }

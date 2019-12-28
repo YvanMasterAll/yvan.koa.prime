@@ -51,6 +51,19 @@ const routes = {
     auth_signout: { method: 'post', path: '/api/auth/signout', meta: { ...meta, auth: false }, control: controllers.auth.signout, desc: '退出登录' },
     auth_refresh: { method: 'post', path: '/api/auth/refresh', meta: { ...meta, auth: false }, control: controllers.auth.refresh, desc: '更新token' },
     auth_check: { method: 'get', path: '/api/auth/check', meta: { ...meta, auth: false }, control: controllers.auth.check },
+
+    /// 通用模块 - 工作流
+    processes: { method: 'get', path: '/api/wk_common/processes', meta: { ...meta, auth: false }, control: controllers.wk_common.processes },
+    /// 工单模块
+    ticket_add: { method: 'post', path: '/api/ticket/add', meta: { ...meta, auth: false }, control: controllers.ticket.ticket_add, desc: '添加工单' },
+    ticket_info: { method: 'get', path: '/api/ticket/info', meta: { ...meta, auth: false }, control: controllers.ticket.ticket_info },
+    ticket_transition_add: { method: 'post', path: '/api/ticket/transition_add', meta: { ...meta, auth: false }, control: controllers.ticket.ticket_transition_add, desc: '工单流转(Transition)' },
+    ticket_activity_list: { method: 'get', path: '/api/ticket/activity_list', meta: { ...meta, auth: false }, control: controllers.ticket.ticket_activity_list },
+    ticket_list: { method: 'get', path: '/api/ticket/list', meta: { ...meta }, control: controllers.ticket.ticket_list },
+    ticket_commit_list: { method: 'get', path: '/api/ticket/commit_list', meta: { ...meta, auth: false }, control: controllers.ticket.ticket_commit_list },
+    ticket_hold_list: { method: 'get', path: '/api/ticket/hold_list', meta: { ...meta, auth: false }, control: controllers.ticket.ticket_hold_list },
+    ticket_stay_list: { method: 'get', path: '/api/ticket/stay_list', meta: { ...meta, auth: false }, control: controllers.ticket.ticket_stay_list },
+    ticket_handle_list: { method: 'get', path: '/api/ticket/handle_list', meta: { ...meta, auth: false }, control: controllers.ticket.ticket_handle_list },
 }
 
 for (var i in routes) {

@@ -66,7 +66,7 @@ export const signin = async (ctx, next) => {
     // 生成token
     let token = utils.getToken({
         // id: user.id, name: user.name, roleids: user.roles.map(d => d.id)
-        id: user.id, name: user.name
+        id: user.id, name: user.name, dept_id: user.dept_id
     })
     let token_exp = utils.getJWTPayload('Bearer ' + token)
 
@@ -93,7 +93,7 @@ export const refresh = async (ctx, next) => {
     // 生成token
     let token = utils.getToken({
         // id: user.id, name: user.name, roleids: user.roles.map(d => d.id)
-        id: user.id, name: user.name
+        id: user.id, name: user.name, dept_id: user.dept_id
     })
     let token_exp = utils.getJWTPayload('Bearer ' + token)
 
