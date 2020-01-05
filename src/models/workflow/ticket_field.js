@@ -29,7 +29,7 @@ Ticket_Field.init(
         type: {
             type: Sequelize.STRING,
             defaultValue: 'string',
-            comment: '字段类型，string：字符串，int：整形，float：浮点型，bool：布尔，date：日期，radio：单选框，checkbox：多选框，select：下拉列表，text：文本域，user：用户, attachment：附件',
+            comment: '字段类型，string：字符串，int：整形，float：浮点型，bool：布尔，date：日期，radio：单选框，checkbox：多选框，select：下拉列表，text：文本域，richtext：富文本，user：用户, image：图片，attachment：附件',
             validate: { isIn: [global.enums.wk._field_type] }
         },
         value: {

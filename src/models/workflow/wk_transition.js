@@ -45,6 +45,12 @@ WK_Transition.init(
             comment: '动作类型，accept：同意，deny：拒绝。',
             validate: { isIn: [global.enums.wk._action_type] }
         },
+        script_type: {
+            type: Sequelize.STRING,
+            defaultValue: global.enums.wk.script_type.none.name,
+            comment: '脚本类型，指定该流转需要执行的脚本，实现额外的逻辑。',
+            validate: { isIn: [Object.values(global.enums.wk.script_type).map(d => d.name)] }
+        }, 
         state: {
             type: Sequelize.STRING,
             defaultValue: 'on',

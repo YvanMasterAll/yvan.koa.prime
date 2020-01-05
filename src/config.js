@@ -68,11 +68,17 @@ const config = {
         role_all: 'role::all',
         job_all: 'job::all',
         permission_all: 'permission::all',
+        ticket_panel: 'ticket::panel',
         time_permission: 'time::permission',
         time_menu: 'time::menu',
         time_dept: 'time::dept',
         time_role: 'time::role',
-        time_job: 'time::job'
+        time_job: 'time::job',
+        time_ticket_panel: 'time::ticket_panel',
+    },
+    // 静态目录
+    static_path: {
+        ticket_upload: 'ticket/upload'
     }
 }
 
@@ -87,7 +93,7 @@ function checkDirectory(path) {
     let cool = fs.existsSync(path)
     if (!cool) { fs.mkdirSync(path) }
 }
-['assets', 'assets/images', 'assets/images/avatar'].forEach(d => {
+['assets', 'assets/images', 'assets/images/avatar', 'assets/ticket', 'assets/ticket/upload'].forEach(d => {
     checkDirectory(d)
 })
 

@@ -1,3 +1,4 @@
+import utils from './index'
 const Sequelize = require('sequelize')
 
 // 枚举常量
@@ -73,6 +74,7 @@ const enums = {
         {id: 23, name: '部门管理', path: 'admin/dept', pid: 1, sort: 23}, 
         {id: 24, name: '岗位管理', path: 'admin/job', pid: 1, sort: 24},  
         {id: 3, name: '工单管理', path: 'ticket', pid: 0, sort: 3}, 
+        {id: 30, name: '工单面板', path: 'ticket/panel', pid: 3, sort: 30}, 
         {id: 31, name: '我发布的工单', path: 'ticket/commit', pid: 3, sort: 31}, 
         {id: 32, name: '我待办的工单', path: 'ticket/hold', pid: 3, sort: 32}, 
         {id: 33, name: '待处理的工单', path: 'ticket/stay', pid: 3, sort: 33}, 
@@ -94,10 +96,12 @@ enums.wk = {
         checkbox: 'checkbox',   // 多选框
         select: 'select',       // 下拉列表
         text: 'text',           // 文本域
+        richtext: 'richtext',   // 富文本
         user: 'user',           // 用户
+        image: 'image',         // 图片
         attachment: 'attachment'// 附件
     },
-    _field_type: ['int', 'string', 'float', 'bool', 'date', 'radio', 'checkbox', 'select', 'text', 'user', 'attachment'],
+    _field_type: ['int', 'string', 'float', 'bool', 'date', 'radio', 'checkbox', 'select', 'text', 'richtext', 'user', 'image', 'attachment'],
     // 工作流字段读写类型
     field_attribute_type: { 
         readOnly: 0,            // 只读
@@ -133,14 +137,19 @@ enums.wk = {
         role: 'role',           // 角色
         script: 'script'        // 脚本
     },
-    _executor_type: ['personal', 'dept', 'script', 'none'],
+    _executor_type: ['personal', 'dept', 'script', 'role', 'none'],
     // 状态类型
     state_type: {
         normal: 'normal',       // 常规状态
         start: 'start',         // 开始状态
         end: 'end'              // 结束状态
     },
-    _state_type: ['normal', 'start', 'end']
+    _state_type: ['normal', 'start', 'end'],
+    // 脚本类型
+    script_type: {
+        'none': { name: 'none', script: null },
+        'caculate_leave_days': { name: 'caculate_leave_days', execute: utils.wk_script.caculate_leave_days}
+    }
 }
 
 export default enums

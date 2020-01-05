@@ -27,6 +27,7 @@ export default function () {
         return next().then(function() {
             if (ctx.request_log.description) { // 记录操作日志
                 ctx.request_log.log_type = ctx.status === 200 ? 'success':'failed'
+                if (ctx.request_log.params.length > 200) { ctx.request_log.params = ctx.request_log.params.substr(0, 200) }
                 ctx.request_log.time = new Date().getTime() - ctx.request_log.create_at.getTime()
                 ctx.request_log.save() 
             }
@@ -63,6 +64,7 @@ export default function () {
                 ctx.request_log.log_type = 'error'
                 let err_detail = JSON.stringify(err)
                 if (err_detail.length > 200) { err_detail = err_detail.substr(0, 200) }
+                if (ctx.request_log.params.length > 200) { ctx.request_log.params = ctx.request_log.params.substr(0, 200) }
                 ctx.request_log.exception_detail = err_detail
                 ctx.request_log.time = new Date().getTime() - ctx.request_log.create_at.getTime()
                 ctx.request_log.save()

@@ -46,9 +46,10 @@ function mock_WK_Field() {
         [1, '标题', 'title', '请假标题', 1, 1, 0, 'string', null],
         [2, '开始时间', 'leave_start', '请假开始时间', 1, 1, 5, 'date', null],
         [3, '结束时间', 'leave_end', '请假结束时间', 1, 1, 10, 'date', null],
-        [4, '请假天数(0.5的倍数)', 'leave_days', '根据起止时间自动计算', 1, 1, 15, 'string', null],
+        [4, '请假天数(0.5的倍数)', 'leave_days', '根据起止时间自动计算', 1, 1, 15, 'float', null],
         [5, '请假类型', 'leave_type', '请假类型', 1, 1, 20, 'select', {"1": "年假", "2": "调休", "3": "病假", "4": "婚假"}],
-        [6, '请假原因', 'leave_reason', '病假请提供证明拍照附件， 婚假请提供结婚证拍照附件', 1, 1, 25, 'text', null]
+        [6, '提交附件', 'leave_prove', '病假请提供证明拍照附件， 婚假请提供结婚证拍照附件', 1, 1, 25, 'attachment', null],
+        [7, '请假原因', 'leave_reason', '病假请提供证明拍照附件， 婚假请提供结婚证拍照附件', 1, 1, 30, 'text', null]
     ]
 
     data.forEach(async d => {
@@ -70,10 +71,11 @@ function mock_WK_Field() {
 function mock_WK_State() {
     // 首先判断个人有没有工单处理的能力，然后再判断工单指向的执行部门是否是自己所在部门，如果条件符合就可以处理工单
     let data = [
-        [1, '新建请假工单', 1, 1, false, 5, 'start', null, 'none', {"title": 1, "leave_start": 1, "leave_end": 1, "leave_type": 1, "leave_reason": 1}],
-        [2, '发起人-编辑中', 1, 1, true, 10, 'normal', null, 'none', {"title": 1, "leave_start": 1, "leave_end": 1, "leave_type": 1, "leave_reason": 1}],
-        [3, '人事部-审批中', 1, 1, false, 15, 'normal', 10, 'dept', {"title": 0, "leave_start": 0, "leave_end": 0, "leave_type": 0, "leave_reason": 0}],
-        [4, '请假工单结束', 1, 1, false, 20, 'end', null, 'none', {}],
+        [1, '新建请假工单', 1, 1, false, 5, 'start', null, 'none', {title: {attribute: 1, show: false}, leave_start: {attribute: 1, show: false}, leave_end: {attribute: 1, show: false}, leave_type: {attribute: 1, show: false}, leave_prove: {attribute: 2, show: false}, leave_reason: {attribute: 1, show: false}}],
+        [2, '发起人-编辑中', 1, 1, true, 10, 'normal', null, 'none', {title: {attribute: 1, show: false}, leave_start: {attribute: 1, show: false}, leave_end: {attribute: 1, show: false}, leave_type: {attribute: 1, show: false}, leave_prove: {attribute: 2, show: false}, leave_reason: {attribute: 1, show: false}}],
+        [3, '人事部-审批中', 1, 1, false, 15, 'normal', 10, 'dept', {title: {attribute: 0, show: false}, leave_start: {attribute: 0, show: false}, leave_end: {attribute: 0, show: false}, leave_type: {attribute: 0, show: false}, leave_prove: {attribute: 0, show: false}, leave_reason: {attribute: 0, show: false}, leave_days: {attribute: 0, show: false}}],
+        [4, '管理员-审批中', 1, 1, false, 20, 'normal', 1, 'role', {title: {attribute: 0, show: false}, leave_start: {attribute: 0, show: false}, leave_end: {attribute: 0, show: false}, leave_type: {attribute: 0, show: false}, leave_prove: {attribute: 0, show: false}, leave_reason: {attribute: 0, show: false}, leave_days: {attribute: 0, show: false}}],
+        [5, '请假工单结束', 1, 1, false, 25, 'end', null, 'none', {}],
     ]
 
     data.forEach(async d => {
@@ -95,13 +97,16 @@ function mock_WK_State() {
 
 function mock_WK_Transition() {
     let data = [
-        [1, '提交', 1, 1, 1, 3, 'normal', 'accept'],
-        [2, '保存', 1, 1, 1, 2, 'normal', 'accept'],
-        [3, '提交', 1, 1, 2, 3, 'normal', 'accept'],
-        [4, '保存', 1, 1, 2, 2, 'normal', 'accept'],
-        [5, '同意', 1, 1, 3, 4, 'normal', 'accept'],
-        [6, '退回', 1, 1, 3, 2, 'normal', 'accept'],
-        [7, '拒绝', 1, 1, 3, 4, 'normal', 'deny']
+        [1, '提交', 1, 1, 1, 3, 'normal', 'accept', 'caculate_leave_days'],
+        [2, '保存', 1, 1, 1, 2, 'normal', 'accept', 'caculate_leave_days'],
+        [3, '提交', 1, 1, 2, 3, 'normal', 'accept', 'caculate_leave_days'],
+        [4, '保存', 1, 1, 2, 2, 'normal', 'accept', 'caculate_leave_days'],
+        [5, '同意', 1, 1, 3, 4, 'normal', 'accept', 'none'],
+        [6, '退回', 1, 1, 3, 2, 'normal', 'accept', 'none'],
+        [7, '拒绝', 1, 1, 3, 4, 'normal', 'deny', 'none'],
+        [8, '同意', 1, 1, 4, 5, 'normal', 'accept', 'none'],
+        [9, '退回', 1, 1, 4, 2, 'normal', 'accept', 'none'],
+        [10, '拒绝', 1, 1, 4, 5, 'normal', 'deny', 'none']
     ]
 
     data.forEach(async d => {
@@ -114,6 +119,7 @@ function mock_WK_Transition() {
         transition.target_state = d[5]
         transition.type = d[6]
         transition.action_type = d[7]
+        transition.script_type = d[8]
     
         await transition.save()
     })

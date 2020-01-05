@@ -6,9 +6,14 @@ const redisUtil = {
         return await client.get(key)
     },
 
-    async set(key, value, maxAge = 7*24*60*60*1000) {
+    // 7*24*60*60*1000 = 一周
+    async set(key, value, maxAge) {
         try {
-            await client.set(key, value, 'EX', maxAge/1000)
+            if (maxAge) {
+                await client.set(key, value, 'EX', maxAge/1000)
+            } else {
+                await client.set(key, value, 'EX')
+            }
         } catch (e) {
             console.log('redis存储异常: ' + e)
             return false
@@ -23,10 +28,15 @@ const redisUtil = {
         return JSON.parse(data)
     },
 
-    async set_json(key, data, maxAge = 7*24*60*60*1000) {
+    // 7*24*60*60*1000 = 一周
+    async set_json(key, data, maxAge) {
         try {
             // Use redis set EX to automatically drop expired sessions
-            await client.set(key, JSON.stringify(data), 'EX', maxAge/1000)
+            if (maxAge) {
+                await client.set(key, JSON.stringify(data), 'EX', maxAge/1000)
+            } else {
+                await client.set(key, JSON.stringify(data), 'EX')
+            }
         } catch (e) {
             console.log('redis存储异常: ' + e)
             return false

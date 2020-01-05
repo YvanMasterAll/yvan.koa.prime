@@ -1,4 +1,5 @@
 import redis from '../utils/redis'
+import moment from 'moment'
 
 class RedisDao {
 
@@ -191,6 +192,38 @@ class RedisDao {
             let time = result.create_at
             if (this.validate_timeline(time, [tl_menu])) {
                 console.log('获取到本地缓存: menu_all')
+                return result.data
+            } else {
+                return null
+            }
+        }
+
+        return result
+    }
+
+    /// 缓存工单面板数据
+    /// ticket_stay(待处理的工单数) + time_month_commit(本月提交工单数) + ticket_month_finished(本月已完成工单数) + ticket_staff_active(员工活跃度) + ticket_category_distribute(工单分类分布)
+
+    static async ticekt_panel_set(panel) {
+        // 添加时间参数, 用于判断数据状态
+        return await redis.set_json(global.config.rkeys.ticket_panel, {data: panel, create_at: new Date().getTime()}, null)
+    }
+
+    static async ticket_panel() {
+        let result = await redis.get_json(global.config.rkeys.ticket_panel)
+        if (result) { // 数据存在
+            let tl_ticket_panel = await this.timeline_get(global.config.rkeys.time_ticket_panel)
+            let time = result.create_at
+            if (this.validate_timeline(time, [tl_ticket_panel])) {
+                // 判断创建时间和当前时间是否同月，如果不同月就表示数据已失效
+                let past = moment(time)
+                let now = moment()
+                console.log('判断ticket_panel面板数据的失效')
+                console.log(past.year() + ':' + now.year() + ':' + past.month() + ':' + now.month())
+                if (past.year() !== now.year() || past.month() !== now.month()) {
+                    return null
+                }
+                console.log('获取到本地缓存: ticket_panel')
                 return result.data
             } else {
                 return null

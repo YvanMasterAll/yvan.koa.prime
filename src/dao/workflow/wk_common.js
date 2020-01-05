@@ -3,8 +3,15 @@ import { WK_Process, WK_Transition, WK_State, WK_Field } from '../../models'
 class WK_CommonDao {
 
     /// 获取流程信息
+    static async processes(where) {
+        return (await WK_Process.findAll({
+            where: { ...global.enums.where, ...where }
+        })).map(d => d.toJSON())
+    }
+
+    /// 获取流程列表
     /// 流程基本信息 + 新建状态的显示字段 + 新建状态的流转Action
-    static async process_info(id) {
+    static async process_list(id) {
         if (!id) {
             return (await WK_Process.findAll({
                 include: [{
@@ -19,7 +26,7 @@ class WK_CommonDao {
                 }, {
                     association: WK_Process.hasMany(WK_Field, {foreignKey: 'process_id', sourceKey: 'id', constraints: false}),
                     required: true,
-                    where: { ...global.enums.where }
+                    where: { ...global.enums.where },
                 }], where: { ...global.enums.where }
             })).map(d => {
                 return d.toJSON()
@@ -38,7 +45,7 @@ class WK_CommonDao {
             }, {
                 association: WK_Process.hasMany(WK_Field, {foreignKey: 'process_id', sourceKey: 'id', constraints: false}),
                 required: true,
-                where: { ...global.enums.where }
+                where: { ...global.enums.where },
             }], where: { ...global.enums.where, id: id }
         })
         if (process) {
@@ -70,7 +77,8 @@ class WK_CommonDao {
     /// 获取字段
     static async fields(where) {
         let fields = (await WK_Field.findAll({
-            where: { ...global.enums.where, ...where }
+            where: { ...global.enums.where, ...where },
+            order: ['sort']
         })).map(d => { return d.toJSON() })
 
         return fields

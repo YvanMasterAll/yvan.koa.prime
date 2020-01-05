@@ -51,7 +51,7 @@ WK_State.init(
         },
         fields: {
             type: Sequelize.JSON,
-            comment: "json格式数据，存储该状态下各字段的读写属性，0：只读，1：必填，2：可选，示例：{'title': 0, 'reason': 1}，未加入的字段代表不显示。"
+            comment: "json格式数据，存储该状态下各字段的读写属性，0：只读，1：必填，2：可选，示例：{'title': {'attribute': 0, 'show': false}, 'reason': {'attribute': 1, 'show': false}}，未加入的字段代表不显示，其中，show表示字段是否显示，用于前端表格的展示。"
         },
         state: {
             type: Sequelize.STRING,

@@ -78,8 +78,8 @@ class UserDao {
     }
 
     /// 判断用户是否拥有处理工单的权限
-    static isTicketExecutor(perms) {
-        return perms.filter(p => p.id === 61).length > 0
+    static isTicketExecutor(perms, isadmin) {
+        return perms.filter(p => p.id === 61).length > 0 || isadmin
     }
 
     /// 判断用户是否拥有工单管理的权限

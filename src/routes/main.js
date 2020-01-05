@@ -54,6 +54,7 @@ const routes = {
 
     /// 通用模块 - 工作流
     processes: { method: 'get', path: '/api/wk_common/processes', meta: { ...meta, auth: false }, control: controllers.wk_common.processes },
+    process_list: { method: 'get', path: '/api/wk_common/process_list', meta: { ...meta, auth: false }, control: controllers.wk_common.process_list },
     /// 工单模块
     ticket_add: { method: 'post', path: '/api/ticket/add', meta: { ...meta, auth: false }, control: controllers.ticket.ticket_add, desc: '添加工单' },
     ticket_info: { method: 'get', path: '/api/ticket/info', meta: { ...meta, auth: false }, control: controllers.ticket.ticket_info },
@@ -64,7 +65,10 @@ const routes = {
     ticket_hold_list: { method: 'get', path: '/api/ticket/hold_list', meta: { ...meta, auth: false }, control: controllers.ticket.ticket_hold_list },
     ticket_stay_list: { method: 'get', path: '/api/ticket/stay_list', meta: { ...meta, auth: false }, control: controllers.ticket.ticket_stay_list },
     ticket_handle_list: { method: 'get', path: '/api/ticket/handle_list', meta: { ...meta, auth: false }, control: controllers.ticket.ticket_handle_list },
-}
+    ticket_executors: { method: 'get', path: '/api/ticket/ticket_executors', meta: { ...meta, auth: false }, control: controllers.ticket.ticket_executors },
+    ticket_upload: { method: 'post', path: '/api/ticket/upload', upload: 'ticket/upload', meta: { ...meta, auth: false }, control: controllers.ticket.ticket_upload, desc: '上传工单文件' },
+    ticket_panel: { method: 'get', path: '/api/ticket/panel', meta: { ...meta, auth: false }, control: controllers.ticket.ticket_panel },
+}   
 
 for (var i in routes) {
     let route = routes[i]
