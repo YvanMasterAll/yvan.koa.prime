@@ -35,9 +35,7 @@ export const add = async (ctx, next) => {
         if (!_depts) { throw new global.errs.ParamsIllegal() }
         depts = _depts.map(d => d*1)
         // 验证部门
-        if (!(await RoleDao.validate_depts(depts))) {
-            throw new global.errs.ParamsIllegal("请选择正确的部门")
-        }
+        await RoleDao.validate_depts(depts)
     }
     // 判断重名
     if (await RoleDao.role_exists({name})) {
@@ -68,16 +66,15 @@ export const edit = async (ctx, next) => {
         if (!_depts) { throw new global.errs.ParamsIllegal() }
         depts = _depts.map(d => d*1)
         // 验证部门
-        if (!(await RoleDao.validate_depts(depts))) {
-            throw new global.errs.ParamsIllegal("请选择正确的部门")
-        }
+        await RoleDao.validate_depts(depts)
     }
     // 验证角色
-    if (!(await RoleDao.role_exists({id}))) {
+    let role = await RoleDao.role_get({id, ...global.enums.where_notdel})
+    if (!role) {
         throw new global.errs.NotFound("要编辑的角色不存在")
     }
     // 判断重名
-    if (await RoleDao.role_exists({name})) {
+    if (role.name !== name && await RoleDao.role_exists({name})) {
         throw new global.errs.Exists("已经存在同名的角色")
     }
     // 超管才能编辑超管角色
@@ -102,16 +99,14 @@ export const del = async (ctx, next) => {
     if (!(await RoleDao.role_exists({id}))) {
         throw new global.errs.NotFound("要删除的角色不存在")
     }
+    await RoleDao.validate_role_del(id)
     // 超管角色不能删除
     if (UserDao.isAdminRole(id)) {
         throw new global.errs.NoPermission("操作权限不够")
     }
 
-    // 删除角色
-    await Role.update({   
-        state: global.enums.state.del,
-        update_at: new Date()
-    }, { where: { id: id }})
+    // 开始事务
+    await RoleDao.role_del(id)
 
     ctx.resolve.success.bind(ctx)("删除角色成功")
 }
@@ -134,9 +129,7 @@ export const menu_edit = async (ctx, next) => {
         throw new global.errs.NoPermission("操作权限不够")
     }
     // 验证菜单
-    if (!(await RoleDao.validate_menus(menus))) {
-        throw new global.errs.ParamsIllegal("请选择正确的菜单")
-    }
+    await RoleDao.validate_menus(menus)
     // 更新权限
     await RoleDao.menus_edit(id, menus)
 
@@ -153,8 +146,9 @@ export const permission_edit = async (ctx, next) => {
     let permissions = []
     if (_permissions) { permissions = _permissions.map(d => d*1) }
     // 验证角色
-    if (!(await RoleDao.role_exists({id}))) {
-        throw new global.errs.NotFound("要编辑权限的角色不存在")
+    let role = await RoleDao.role_get({id, ...global.enums.where_notdel})
+    if (!role) {
+        throw new global.errs.NotFound("要编辑的角色不存在")
     }
     // 超管角色的权限不会变更
     if (UserDao.isAdminRole(id)) {
@@ -173,9 +167,7 @@ export const permission_edit = async (ctx, next) => {
             throw new global.errs.NoPermission("操作权限不够")
         }
     }
-    if (!(await RoleDao.validate_permissions(permissions))) {
-        throw new global.errs.ParamsIllegal("请选择正确的权限")
-    }
+    await RoleDao.validate_permissions(permissions)
     // 更新权限
     await RoleDao.permissions_edit(id, permissions)
 

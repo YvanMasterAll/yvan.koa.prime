@@ -8,6 +8,8 @@ import Roles_Depts from '../roles_depts'
 import Roles_Menus from '../roles_menus'
 import Roles_Permissions from '../roles_permissions'
 import Users_Roles from '../users_roles'
+import Dict from '../dict'
+import Dict_Item from '../dict_item.js'
 
 // 初始化数据
 function initData() {
@@ -40,6 +42,9 @@ function initData() {
 
     // // DATA: 用户
     // initData_Users()
+
+    // // DATA: 字典
+    // initData_Dict()
 
     // // 重置缓存
     // resetCache()
@@ -87,6 +92,7 @@ function initData_Menu() {
         menu.name = d.name
         menu.path = d.path
         menu.pid = d.pid
+        menu.menu_type = d.type
         menu.sort = d.sort
     
         await menu.save()
@@ -110,7 +116,7 @@ function initData_Perm() {
 function initData_Role() {
     let data = [
         // [1, '超级管理员', '·', 'all', 1], [2, '普通管理员', '普通管理员级别为2，使用该角色新增用户时只能赋予比普通管理员级别低的角色', 'diy', 2], [3, '普通用户', '用于测试菜单与权限', 'diy', 3]
-        [1, '超级管理员', '最高权限执行人', 'all', 1], [2, '人事管理', '人事部门管理角色，可以处理人事相关事务', 'all', 5], [3, '普通员工', '普通角色，适用于公司在职人员', 'same', 10]
+        [1, '超级管理员', '最高权限执行人', 'all', 1], [2, '人事管理', '人事部门管理角色，可以处理人事相关事务', 'all', 5], [3, '普通员工1', '普通角色，适用于公司在职人员', 'same', 10], [4, '普通员工2', '普通角色，适用于公司在职人员', 'same', 10]
     ]
 
     data.forEach(async d => {
@@ -147,7 +153,7 @@ function initData_Roles_Depts() {
 function initData_Roles_Menus() {
     let data = [ 
         // [1, 3], [2, 3], [3, 3], [4, 3], [5, 3], [6, 3], [8, 3], [9, 3], [10, 3], [11, 3], [14, 3], [15, 3], [16, 3], [17, 3], [18, 3], [19, 3], [21, 3], [22, 3], [23, 3], [24, 3], [27, 3], [28, 3], [30, 3], [33, 3], [34, 3], [35, 3], [36, 3], [37, 3], [38, 3], [39, 3], [1, 2], [2, 2],
-        [2, 1], [2, 23], [2, 24], [2, 3], [2, 31], [2, 32], [2, 33], [2, 34], [3, 3], [3, 30], [3, 31], [3, 32]
+        [2, 1], [2, 23], [2, 24], [2, 3], [2, 4], [2, 30], [2, 31], [2, 32], [2, 33], [2, 34], [3, 3], [3, 4], [3, 31], [3, 32], [3, 33], [3, 34], [4, 3], [4, 4], [4, 31], [4, 32], [4, 33], [4, 34]
     ]
 
     data.forEach(async d => {
@@ -176,7 +182,7 @@ function initData_Roles_Perms() {
 
 function initData_Users_Roles() {
     let data = [
-        [1, 1], [2, 2], [3, 3]
+        [1, 1], [2, 2], [3, 3], [4, 3]
     ]
 
     data.forEach(async d => {
@@ -192,7 +198,8 @@ function initData_Users() {
     let data = [
         [1, 'admin@zzzk.com', '123456', '管理员', 1, '18888888888', 1],
         [2, 'hr@zzzk.com', '123456', '人事管理', 10, '18888888888', 3],
-        [3, 'test@zzzk.com', '123456', '测试员工', 4, '18888888888', 6]
+        [3, 'test@zzzk.com', '123456', '测试员工1', 4, '18888888888', 6],
+        [4, 'test@zzzk.com', '123456', '测试员工2', 7, '18888888888', 8]
     ]
 
     data.forEach(async d => {
@@ -209,9 +216,35 @@ function initData_Users() {
     })
 }
 
+function initData_Dict() {
+    let data = [
+        [1, 'state', '通用状态', [[1, 1, 'on', '激活', 0], [2, 1, 'off', '禁用', 1]]],
+    ]
+
+    data.forEach(async d => {
+        let dict = new Dict()
+        dict.id = d[0]
+        dict.name = d[1]
+        dict.description = d[2]
+
+        await dict.save()
+
+        await d[3].forEach(async item => {
+            let dict_item = new Dict_Item()
+            dict_item.id = item[0]
+            dict_item.dict_id = item[1]
+            dict_item.label = item[3]
+            dict_item.value = item[2]
+            dict_item.sort = item[4]
+
+            await dict_item.save()
+        })
+    })
+}
+
+import { RedisDao } from '../../dao'
 function resetCache() {
-    // import { RedisDao } from '../dao'
-    // RedisDao.timeline_resetall()
+    RedisDao.resetall()
 }
 
 initData()

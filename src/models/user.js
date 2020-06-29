@@ -48,9 +48,9 @@ User.init(
         },
         state: {
             type: Sequelize.STRING,
-            defaultValue: 'on',
+            defaultValue: global.enums.state.on,
             comment: '状态',
-            validate: { isIn: [global.enums._state] }
+            validate: { isIn: [global.enums.state_arr] }
         }
     },
     {

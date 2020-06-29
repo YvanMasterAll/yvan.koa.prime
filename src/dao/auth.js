@@ -9,7 +9,6 @@ class AuthDao {
         let user = await User.findOne({
             include: [{
                 association: User.belongsToMany(Role, {through: Users_Roles, foreignKey: 'user_id', constraints: false}),
-                required: true,
                 where: { ...global.enums.where }
             }], where: {
                 id: id,
@@ -27,17 +26,14 @@ class AuthDao {
         return (await Roles_Menus.findAll({
             include: [{
                 model: Role,
-                required: true,
                 where: { ...global.enums.where }
             }, {
                 model: Menu,
-                required: true,
                 where: { ...global.enums.where }
             }], where: {
                 role_id: {
                     [Sequelize.Op.in]: roleids
                 },
-                ...global.enums.where
             }
         })).map(d => {
             return d.toJSON()
@@ -49,17 +45,14 @@ class AuthDao {
         let results = (await Roles_Permissions.findAll({
             include: [{
                 model: Role,
-                required: true,
                 where: { ...global.enums.where }
             }, {
                 model: Permission,
-                required: true,
                 where: { ...global.enums.where }
             }], where: {
                 role_id: {
                     [Sequelize.Op.in]: roleids
                 },
-                ...global.enums.where
             }
         })).map(d => {
             return d.toJSON()
@@ -79,19 +72,16 @@ class AuthDao {
         return (await Users_Roles.findAll({
             include: [{
                 model: Role,
-                required: true,
                 where: { ...global.enums.where }
             }, {
                 association: Users_Roles.hasMany(Roles_Permissions, {foreignKey: 'role_id', sourceKey: 'role_id', constraints: false}),
                 required: false,
                 include: [{
                     model: Permission,
-                    required: true,
                     where: { ...global.enums.where }
-                }], where: { ...global.enums.where }
+                }]
             }], where: {
                 user_id: id,
-                ...global.enums.where
             }
         })).map(d => {
             return d.toJSON()
@@ -99,7 +89,7 @@ class AuthDao {
     }
 
     /// 整理资源权限, 拼接权限路径
-    /// 比如说我有用户查询的权限，那么拼接出来的路径应该就是：user/list
+    /// 比如说我有用户(user)查询(list)的权限，那么拼接出来的路径应该就是：user/list
     static async splicePermissions(data) {
         let results = await CommonDao.permissions()
         let perms = []

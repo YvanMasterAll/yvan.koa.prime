@@ -1,41 +1,45 @@
 const { sequelize } = require('../../utils/db')
 const { Sequelize, Model } = require('sequelize')
 
-/// 流程通知
+/// 表格数据项
 
-class WK_Notice extends Model {}
+class ST_Sheet extends Model {}
 
-WK_Notice.init(
+ST_Sheet.init(
     {
         id: {
             type: Sequelize.INTEGER,
-            autoIncrement: true,
             primaryKey: true,
+            autoIncrement: true,
             comment: 'ID'
         },
-        name: {
-            type: Sequelize.STRING,
-            commit: '名称'
-        },
-        description: {
-            type: Sequelize.STRING,
-            commit: '描述信息'
-        },
-        creator: {
+        tmpl_id: {
             type: Sequelize.INTEGER,
-            commit: '创建者'
+            comment: '模板ID'
         },
-        script: {
+        sn: {
             type: Sequelize.STRING,
-            commit: '通知脚本'
+            comment: '设备序列号'
         },
-        title_template: {
+        sn2: {
             type: Sequelize.STRING,
-            commit: '标题模板'
+            comment: '设备序列号2'
         },
-        content_template: {
+        title: {
             type: Sequelize.STRING,
-            commit: '内容模板'
+            comment: '表格标题'
+        },
+        company: {
+            type: Sequelize.STRING,
+            comment: '公司'
+        },
+        data: {
+            type: Sequelize.TEXT,
+            comment: '数据'
+        },
+        date: {
+            type: Sequelize.STRING,
+            comment: '日期'
         },
         state: {
             type: Sequelize.STRING,
@@ -46,9 +50,9 @@ WK_Notice.init(
     },
     {
         sequelize,
-        tableName: 'wk_notice'
+        comment: '表格数据项',
+        tableName: 'st_sheet'
     }
 )
 
-export default WK_Notice
-
+export default ST_Sheet

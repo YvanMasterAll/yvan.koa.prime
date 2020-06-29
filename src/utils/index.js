@@ -156,6 +156,7 @@ utils.validate_wk_fields = function (ctx, wk_fields, fields) {
 
     return result
 }
+
 // 处理工单字段，拼接url
 utils.split_wk_fields = function(wk_fields, json_data) {
     for (var key in json_data) {
@@ -194,8 +195,7 @@ utils.wk_script = {
     }
 }
 
-utils.toDateString = function(date) {
-    let format = "YYYY-MM-DD HH:mm:ss"
+utils.toDateString = function(date, format = "YYYY-MM-DD HH:mm:ss") {
     if (date) {
         return moment(date).format(format)
     }
@@ -210,7 +210,7 @@ utils.isDateString = function(dateString) {
     return /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/.test(dateString)
 }
 
-/// 扩展
+// 字符串扩展
 String.prototype.startWith = function(str) {     
     var reg = new RegExp('^' + str)
     return reg.test(this)

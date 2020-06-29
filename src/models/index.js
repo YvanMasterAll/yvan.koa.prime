@@ -8,19 +8,24 @@ import Roles_Depts from './roles_depts'
 import Roles_Menus from './roles_menus'
 import Roles_Permissions from './roles_permissions'
 import Users_Roles from './users_roles'
+import Dict from './dict'
+import Dict_Item from './dict_item'
 import Log from './log'
-import Ticket_Activity from './workflow/ticket_activity'
-import Ticket_Field from './workflow/ticket_field'
-import Ticket_Request from './workflow/ticket_request'
+import WK_Ticket_Activity from './workflow/wk_ticket_activity'
+import WK_Ticket_Request from './workflow/wk_ticket_request'
 import WK_Field from './workflow/wk_field'
 import WK_Notice from './workflow/wk_notice'
 import WK_Process from './workflow/wk_process'
 import WK_State from './workflow/wk_state'
 import WK_Transition from './workflow/wk_transition'
+import ST_Sheet_Tmpl from './sheet/st_sheet_tmpl'
+import ST_Field from './sheet/st_field'
+import ST_Sheet from './sheet/st_sheet'
 
 export { 
-    User, Role, Dept, Job, Menu, Permission, Roles_Depts, Roles_Menus, Roles_Permissions, Users_Roles, Log,
-    Ticket_Activity, Ticket_Field, Ticket_Request, WK_Field, WK_Notice, WK_Process, WK_State, WK_Transition
+    User, Role, Dept, Job, Menu, Permission, Roles_Depts, Roles_Menus, Roles_Permissions, Users_Roles, Dict, Dict_Item, Log,
+    WK_Ticket_Activity, WK_Ticket_Request, WK_Field, WK_Notice, WK_Process, WK_State, WK_Transition,
+    ST_Sheet_Tmpl, ST_Field, ST_Sheet
 }
 
 // 初始化数据库数据
@@ -28,6 +33,13 @@ import './mock'
 
 // 测试数据库查询
 async function testSQL() {
+    // // 字典查询
+    // let result = (await Dict.findAll({
+    //     include: [{
+    //         association: Dict.hasMany(Dict_Item, {foreignKey: 'dict_id', sourceKey: 'id', constraints: false}),
+    //     }]
+    // })).map(d => d.toJSON())
+    // console.log(result)
     // // 测试关联查询
     // let results = (await Users_Roles.findAll({
     //     include: [{

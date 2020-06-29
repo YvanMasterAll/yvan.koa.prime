@@ -35,15 +35,15 @@ WK_Transition.init(
         },
         type: {
             type: Sequelize.STRING,
-            defaultValue: 'normal',
+            defaultValue: global.enums.wk.transition_type.normal,
             comment: '流转类型，normal：常规流转。',
-            validate: { isIn: [global.enums.wk._transition_type] }
+            validate: { isIn: [global.enums.wk.transition_types] }
         },
         action_type: {
             type: Sequelize.STRING,
-            defaultValue: 'accept',
+            defaultValue: global.enums.wk.action_type.accept,
             comment: '动作类型，accept：同意，deny：拒绝。',
-            validate: { isIn: [global.enums.wk._action_type] }
+            validate: { isIn: [global.enums.wk.action_types] }
         },
         script_type: {
             type: Sequelize.STRING,
@@ -53,9 +53,9 @@ WK_Transition.init(
         }, 
         state: {
             type: Sequelize.STRING,
-            defaultValue: 'on',
+            defaultValue: global.enums.state.on,
             comment: '状态',
-            validate: { isIn: [global.enums._state] }
+            validate: { isIn: [global.enums.state_arr] }
         }
     },
     {

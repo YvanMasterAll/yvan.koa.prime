@@ -1,33 +1,29 @@
 const { sequelize } = require('../../utils/db')
 const { Sequelize, Model } = require('sequelize')
 
-/// 工作流流程
+/// 表格字段
 
-class WK_Process extends Model {}
+class ST_Field extends Model {}
 
-WK_Process.init(
+ST_Field.init(
     {
         id: {
             type: Sequelize.INTEGER,
-            autoIncrement: true,
             primaryKey: true,
+            autoIncrement: true,
             comment: 'ID'
         },
-        name: {
+        key: {
             type: Sequelize.STRING,
-            commit: '名称'
+            comment: '字段标识'
         },
-        description: {
+        label: {
             type: Sequelize.STRING,
-            commit: '描述信息'
+            comment: '标签'
         },
-        creator: {
-            type: Sequelize.INTEGER,
-            commit: '创建者'
-        },
-        notices: {
-            type: Sequelize.ARRAY(Sequelize.TEXT),
-            commit: '通知类型，是一个数组'
+        value: {
+            type: Sequelize.STRING,
+            comment: '字段值'
         },
         state: {
             type: Sequelize.STRING,
@@ -38,9 +34,9 @@ WK_Process.init(
     },
     {
         sequelize,
-        tableName: 'wk_process'
+        comment: '表格字段',
+        tableName: 'st_field'
     }
 )
 
-export default WK_Process
-
+export default ST_Field

@@ -16,7 +16,7 @@ export const ticket_add = async (ctx, next) => {
     }
     // 权限判断，目前没有限制新建工单的权限
     // 获取流程信息
-    let process = await WK_CommonDao.process_list(process_id)
+    let process = await WK_CommonDao.process_all(process_id)
     if (!process) { throw new global.errs.ParamsIllegal("工单流程不存在") }
     // 获取流程字段和该状态下可显示和操作的字段
     let wk_fields = process.WK_Fields 
@@ -46,7 +46,7 @@ export const ticket_info = async (ctx, next) => {
     let ticket_id = ctx.request.query.ticket_id*1
     if (!ticket_id) { throw new global.errs.ParamsIllegal() }
     // 验证工单
-    if (!(await TicketDao.ticket_exists(ticket_id))) {
+    if (!(await TicketDao.ticket_exists({id: ticket_id}))) {
         throw new global.errs.NotFound("该工单不存在")
     }
     // 获取工单信息
@@ -62,7 +62,7 @@ export const ticket_info = async (ctx, next) => {
     ticket_info.WK_Fields = wk_fields
     // 创建者信息
     let user = (await User.findOne({
-        where: { id: ticket_info.creator,  ...global.enums.where }, raw: true
+        where: { id: ticket_info.creator }, raw: true
     }))
     if (user) { ticket_info.creator_name = user.name }
 
@@ -115,7 +115,7 @@ export const ticket_activity_list = async (ctx, next) => {
     let ticket_id = ctx.request.query.ticket_id*1
     if (!ticket_id) { throw new global.errs.ParamsIllegal() }
     // 获取工单
-    let ticket = await TicketDao.ticket({id: ticket_id})
+    let ticket = await TicketDao.ticket_get({id: ticket_id, ...global.enums.where})
     if (!ticket) { throw new global.errs.ParamsIllegal() }
     // 验证用户权限
     if (!TicketDao.validate_ticketinfo(id, ticket, isadmin, perms, roleids, dept_id)) {
@@ -140,7 +140,7 @@ export const ticket_commit_list = async (ctx, next) => {
 }
 
 /// 我待办的工单
-export const ticket_hold_list = async (ctx, next) => {
+export const ticket_pending_list = async (ctx, next) => {
     let { id } = ctx.state._user
     // 创建查询条件
     let where = await TicketDao.where_ticket(ctx)
@@ -153,14 +153,14 @@ export const ticket_hold_list = async (ctx, next) => {
 }
 
 /// 待处理的工单
-export const ticket_stay_list = async (ctx, next) => {
+export const ticket_todo_list = async (ctx, next) => {
     let { id, perms, dept_id, roleids, isadmin } = ctx.state._user
     // 验证用户权限
-    if (!UserDao.isTicketExecutor(perms, isadmin)) { throw new global.errs.ParamsIllegal("没有权限查看相关内容") }
+    // if (!UserDao.isTicketExecutor(perms, isadmin)) { throw new global.errs.ParamsIllegal("没有权限查看相关内容") }
     // 创建查询条件
     let where = await TicketDao.where_ticket(ctx)
     // 开始查询
-    let { results, count } = await TicketDao.ticket_stay_list(where, id, dept_id, roleids, ctx)
+    let { results, count } = await TicketDao.ticket_todo_list(where, id, dept_id, roleids, ctx)
 
     ctx.resolve.json.bind(ctx)(results, '操作成功', count)
 }
@@ -169,10 +169,10 @@ export const ticket_stay_list = async (ctx, next) => {
 export const ticket_handle_list = async (ctx, next) => {
     let { id, perms, dept_id, roleids, isadmin } = ctx.state._user
     // 验证用户权限
-    if (!UserDao.isTicketExecutor(perms, isadmin)) { throw new global.errs.ParamsIllegal("没有权限查看相关内容") }
+    // if (!UserDao.isTicketExecutor(perms, isadmin)) { throw new global.errs.ParamsIllegal("没有权限查看相关内容") }
     // 创建查询条件
     let where = await TicketDao.where_ticket(ctx)
-    where.executors = {[Sequelize.Op.contains]: [id] }
+    where.all_executors = {[Sequelize.Op.contains]: [id] }
     // 开始查询
     let { results, count } = await TicketDao.ticket_list(where, ctx)
 
@@ -181,9 +181,9 @@ export const ticket_handle_list = async (ctx, next) => {
 
 /// 所有工单列表
 export const ticket_list = async (ctx, next) => {
-    // let { id, perms, dept_id, roleids } = ctx.state._user
+    let { perms, isadmin } = ctx.state._user
     // 验证用户权限，因为交给中间件处理了，所以这里不需要再验证
-    // if (!UserDao.isTicketManager(perms)) { throw new global.errs.ParamsIllegal("没有权限查看相关内容") }
+    if (!UserDao.isTicketManager(perms, isadmin)) { throw new global.errs.ParamsIllegal("没有权限查看相关内容") }
     // 创建查询条件
     let where = await TicketDao.where_ticket(ctx)
     // 开始查询
@@ -209,12 +209,19 @@ export const ticket_upload = async (ctx, next) => {
 }
 
 /// 工单面板
-/// ticket_stay(待处理的工单数) + time_month_commit(本月提交工单数) + ticket_month_finished(本月已完成工单数) + ticket_staff_active(员工活跃度) + ticket_category_distribute(工单分类分布)
+/// ticket_todo(待处理的工单数) + time_month_commit(本月提交工单数) + ticket_month_finished(本月已完成工单数) + ticket_staff_active(员工活跃度) + ticket_category_distribute(工单分类分布)
 export const ticket_panel = async (ctx, next) => {
     let { perms, isadmin } = ctx.state._user
     // 验证用户权限
     if (!UserDao.isTicketExecutor(perms, isadmin)) { throw new global.errs.ParamsIllegal("没有权限查看相关内容") }
     let result = await TicketDao.ticket_panel()
     
+    ctx.resolve.json.bind(ctx)(result)
+}
+
+/// 问题反馈积累的奖金数据
+export const ticket_feedback_reward = async (ctx, next) => {
+    let result = await TicketDao.ticket_feedback_reward()
+
     ctx.resolve.json.bind(ctx)(result)
 }

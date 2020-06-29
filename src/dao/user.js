@@ -1,18 +1,18 @@
 import { Roles_Depts, Dept, Job, User, Users_Roles, Role } from '../models'
 import CommonDao from './common'
+const validator = require('validator')
 const { doTransaction } = require('../utils/db')
 const Sequelize = require('sequelize')
 
 class UserDao {
 
-    /// 获取部门权限
+    /// 获取角色拥有的部门权限
     static async roles_depts(roleids) {
         return (await Roles_Depts.findAll({
             where: {
                 role_id: {
                     [Sequelize.Op.in]: roleids
                 },
-                ...global.enums.where
             }
         })).map(d => {
             return d.toJSON()
@@ -22,20 +22,20 @@ class UserDao {
     /// 验证角色有效性
     static async validate_roles(roleids, isadmin, level) {
         let roles = await CommonDao.roles()
-        let roles_state = true
+        let cool = true
         roleids.forEach(r => {
             let role = roles.filter(d => d.id === r)[0]
             if (!role) {
-                roles_state = false
+                cool = false
                 return false
             } else {
-                if (!isadmin && level >= role.level) { // 添加的角色级别不能高于用户本身
-                    roles_state = false
+                if (!isadmin && level >= role.level) { // 操作的角色级别不能高于用户本身
+                    cool = false
                     return false
                 } 
             }
         })
-        if (!roles_state) { throw new global.errs.ParamsIllegal("请选择正确的角色") }
+        if (!cool) { throw new global.errs.ParamsIllegal("请选择正确的角色") }
     }
 
     /// 获取用户角色
@@ -43,7 +43,6 @@ class UserDao {
         return (await Users_Roles.findAll({
             where: {
                 user_id: id,
-                ...global.enums.where
             }
         })).map(d => d.toJSON()).map(d => d.role_id)
     }
@@ -79,21 +78,23 @@ class UserDao {
 
     /// 判断用户是否拥有处理工单的权限
     static isTicketExecutor(perms, isadmin) {
-        return perms.filter(p => p.id === 61).length > 0 || isadmin
+        // return perms.filter(p => p.id === 61).length > 0 || isadmin
+        return perms.filter(p => p.path == 'ticket/execute').length > 0 || isadmin
     }
 
     /// 判断用户是否拥有工单管理的权限
-    static isTicketManager(perms) {
-        return perms.filter(p => p.id === 62).length > 0
+    static isTicketManager(perms, isadmin) {
+        // return perms.filter(p => p.id === 62).length > 0 || isadmin
+        return perms.filter(p => p.path == 'ticket').length > 0 || isadmin
     }
 
-    /// 验证用户有效性
+    /// 验证用户可操作性
     static async validate_user(id, isadmin, scope, roleids) {
         if (!roleids) { // 验证用户是否存在
             let user = (await User.findOne({
                 where: {
                     id: id, 
-                    ...global.enums._where
+                    ...global.enums.where_notdel
                 },
                 raw: true
             }))
@@ -113,12 +114,10 @@ class UserDao {
         let user = await Users_Roles.findOne({
             include: [{
                 model: User,
-                required: true,
-                where: { ...where.user, ...global.enums._where }
+                where: { ...where.user, ...global.enums.where_notdel }
             }, {
                 model: Role,
-                required: true,
-                where: { ...global.enums.where, ...where.role }
+                where: { ...where.role, ...global.enums.where_notdel }
             }]
         })
         if (!user) { throw new global.errs.ParamsIllegal("要操作的用户不存在或者没有权限操作") }
@@ -126,14 +125,17 @@ class UserDao {
 
     /// 构建用户查询条件
     static async where_user(where, dept, isadmin, scope, roleids) {
+        // 1.角色级别查询约束
         if (!isadmin && scope ===  global.enums.scope.same) {
-            where.role.level = { [Sequelize.Op.gt]: level } // 角色级别约束
+            where.role.level = { [Sequelize.Op.gt]: level } 
         }
-        if (dept) { // 部门查询条件
+        // 2.部门查询条件
+        if (dept) { 
             let depts = await CommonDao.depts_withChildren([dept])
             where.user.dept_id = { [Sequelize.Op.in]: depts.map(d => d.id) }
         }
-        if (!isadmin && scope === global.enums.scope.diy) { // 部门约束
+        // 3.部门查询约束，自定义权限范围指定的部门需要添加到查询条件中
+        if (!isadmin && scope === global.enums.scope.diy) { 
             // 查询部门权限, 包括子部门
             let scope_deptids = (await this.roles_depts(roleids)).map(d => d.dept_id)
             let scope_depts = await CommonDao.depts_withChildren(scope_deptids)
@@ -156,23 +158,16 @@ class UserDao {
         let result = (await Users_Roles.findAndCountAll({
             include: [{
                 model: User,
-                required: true,
-                where: { ...global.enums._where, ...where.user },
+                where: { ...global.enums.where_notdel, ...where.user },
                 attributes: { exclude: ['password'] },
                 include: [{
                     association: User.belongsTo(Dept, {foreignKey: 'dept_id', targetKey: 'id', constraints: false}),
-                    required: true,
-                    where: { ...global.enums.where }
                 },{
                     association: User.belongsTo(Job, {foreignKey: 'job_id', targetKey: 'id', constraints: false}),
-                    required: true,
-                    where: { ...global.enums.where }
                 }]
             }, {
                 model: Role,
-                required: false,
-                where: { ...global.enums.where, ...where.role }
-            }], where: { ...global.enums._where },
+            }],
             offset: ctx.limit*ctx.pagenum,
             limit: ctx.limit,
             distinct: true // 只计算主表数量
@@ -226,7 +221,6 @@ class UserDao {
         let current_roleids = (await Users_Roles.findAll({
             where: {
                 user_id: id,
-                ...global.enums.where
             }
         })).map(d => d.toJSON()).map(d => d.role_id)
         
@@ -253,7 +247,6 @@ class UserDao {
                 if (roleids.indexOf(d) === -1) {
                     // 删除用户角色
                     await Users_Roles.destroy({where: {user_id: id, role_id: d}, transaction})
-                    // await Users_Roles.update({state: global.enums.state.del, update_at: new Date()}, {where: {user_id: id, role_id: d}, transaction})
                 }
             }
         }, () => { throw new global.errs.DBError("数据库操作异常") })
@@ -266,7 +259,6 @@ class UserDao {
             await User.update({ state: global.enums.state.del, update_at: new Date() }, { where: {id: id}, transaction })
             // 删除用户角色
             await Users_Roles.destroy({ where: {user_id: id}, transaction })
-            // await Users_Roles.update({ state: global.enums.state.del, update_at: new Date() }, { where: {user_id: id}, transaction })
         }, () => { throw new global.errs.DBError("数据库操作异常") })
     }
 
@@ -277,12 +269,8 @@ class UserDao {
             attributes: { exclude: ['password'] },
             include: [{
                 association: User.belongsTo(Dept, {foreignKey: 'dept_id', targetKey: 'id', constraints: false}),
-                required: true,
-                where: { ...global.enums.where }
             },{
                 association: User.belongsTo(Job, {foreignKey: 'job_id', targetKey: 'id', constraints: false}),
-                required: true,
-                where: { ...global.enums.where }
             }]
         }))
         if (result) {

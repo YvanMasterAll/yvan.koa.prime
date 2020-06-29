@@ -54,7 +54,7 @@ class CommonDao {
         return depts
     }
 
-    /// 为一些数据建立树结构
+    /// 生成树结构
     static buildTree(data) {
         let tree = []
         data.forEach(r => {
@@ -83,7 +83,7 @@ class CommonDao {
         return tree
     }
 
-    /// 获取部门和它所有的子部门
+    /// 获取部门以及所有子部门
     static async depts_withChildren(deptids) {
         // 获取本地缓存
         let depts = await RedisDao.dept_all()
@@ -178,31 +178,6 @@ class CommonDao {
         await RedisDao.menu_all_set(menus)
 
         return menus
-    }
-
-    /// 验证部门有效性
-    static async validate_dept(id) {
-        let dept = (await Dept.findOne({
-            where: {
-                id: id, 
-                ...global.enums.where
-            },
-            raw: true
-        }))
-        if (!dept) { throw new global.errs.ParamsIllegal("请选择正确的部门") }
-    }
-
-    /// 验证岗位有效性
-    static async validate_job(id, dept_id) {
-        let job = (await Job.findOne({
-            where: {
-                id: id, 
-                dept_id: dept_id,
-                ...global.enums.where
-            },
-            raw: true
-        }))
-        if (!job) { throw new global.errs.ParamsIllegal("请选择正确的岗位·") }
     }
 }
 

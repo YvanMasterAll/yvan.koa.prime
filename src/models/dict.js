@@ -1,33 +1,25 @@
-const { sequelize } = require('../../utils/db')
+const { sequelize } = require('../utils/db')
 const { Sequelize, Model } = require('sequelize')
 
-/// 工作流流程
+/// 字典
 
-class WK_Process extends Model {}
+class Dict extends Model {}
 
-WK_Process.init(
+Dict.init(
     {
         id: {
             type: Sequelize.INTEGER,
-            autoIncrement: true,
             primaryKey: true,
+            autoIncrement: true,
             comment: 'ID'
         },
         name: {
             type: Sequelize.STRING,
-            commit: '名称'
+            comment: '名称'
         },
         description: {
             type: Sequelize.STRING,
-            commit: '描述信息'
-        },
-        creator: {
-            type: Sequelize.INTEGER,
-            commit: '创建者'
-        },
-        notices: {
-            type: Sequelize.ARRAY(Sequelize.TEXT),
-            commit: '通知类型，是一个数组'
+            comment: '描述'
         },
         state: {
             type: Sequelize.STRING,
@@ -38,9 +30,9 @@ WK_Process.init(
     },
     {
         sequelize,
-        tableName: 'wk_process'
+        comment: '数据字典',
+        tableName: 'dict'
     }
 )
 
-export default WK_Process
-
+export default Dict

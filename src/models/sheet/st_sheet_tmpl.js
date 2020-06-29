@@ -1,11 +1,11 @@
-const { sequelize } = require('../utils/db')
+const { sequelize } = require('../../utils/db')
 const { Sequelize, Model } = require('sequelize')
 
-/// 角色
+/// 表格模板
 
-class Role extends Model {}
+class ST_Sheet_Tmpl extends Model {}
 
-Role.init(
+ST_Sheet_Tmpl.init(
     {
         id: {
             type: Sequelize.INTEGER,
@@ -13,21 +13,13 @@ Role.init(
             autoIncrement: true,
             comment: 'ID'
         },
-        name: {
+        title: {
             type: Sequelize.STRING,
             comment: '名称'
         },
-        remark: {
-            type: Sequelize.STRING,
-            comment: '备注'
-        },
-        scope: {
-            type: Sequelize.STRING,
-            comment: '权限范围'
-        },
-        level: {
-            type: Sequelize.INTEGER,
-            comment: '级别'
+        template: {
+            type: Sequelize.TEXT,
+            comment: '模板数据'
         },
         state: {
             type: Sequelize.STRING,
@@ -38,8 +30,9 @@ Role.init(
     },
     {
         sequelize,
-        tableName: 'role'
+        comment: '表格模板',
+        tableName: 'st_sheet_tmpl'
     }
 )
-    
-export default Role
+
+export default ST_Sheet_Tmpl

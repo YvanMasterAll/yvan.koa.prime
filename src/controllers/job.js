@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize')
 var _ = require('lodash')
 const validator = require('validator')
-import { JobDao, CommonDao } from '../dao'
+import { JobDao, DeptDao } from '../dao'
 
 /// 获取岗位列表
 export const list = async (ctx, next) => {
@@ -27,8 +27,11 @@ export const add = async (ctx, next) => {
     // 参数验证
     if (!name || !dept || !sort) {  throw new global.errs.ParamsIllegal() }
     if (validator.isEmpty(name, { ignore_whitespace: true })) { throw new global.errs.ParamsIllegal() }
-    await CommonDao.validate_dept(dept)
-    // 验证岗位
+    // 验证部门
+    if (!(await DeptDao.dept_exists({id: dept}))) {
+        throw new global.errs.ParamsIllegal("请选择正确的部门")
+    }
+    // 判断重名
     if (await JobDao.job_exists({name, dept_id: dept})) {
         throw new global.errs.Exists("岗位已存在")
     }
@@ -48,11 +51,15 @@ export const edit = async (ctx, next) => {
     // 参数验证
     if (!id || !name || !dept || !sort) {  throw new global.errs.ParamsIllegal() }
     if (validator.isEmpty(name, { ignore_whitespace: true })) { throw new global.errs.ParamsIllegal() }
-    await CommonDao.validate_dept(dept)
+    // 验证部门
+    if (!(await DeptDao.dept_exists({id: dept}))) {
+        throw new global.errs.ParamsIllegal("请选择正确的部门")
+    }
     // 验证岗位
     if (!(await JobDao.job_exists({id}))) {
         throw new global.errs.NotFound("要编辑的岗位不存在")
     }
+    // 判断重名
     if (await JobDao.job_exists({name, dept_id: dept})) {
         throw new global.errs.Exists("已存在同名的岗位")
     }

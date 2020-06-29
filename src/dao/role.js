@@ -1,4 +1,4 @@
-import { Roles_Permissions, Roles_Menus, Role, Menu, Permission, Dept, Roles_Depts } from '../models'
+import { Roles_Permissions, Users_Roles, Roles_Menus, Role, Menu, Permission, Dept, Roles_Depts } from '../models'
 const Sequelize = require('sequelize')
 const { doTransaction } = require('../utils/db')
 import { CommonDao } from '../dao'
@@ -11,18 +11,12 @@ class RoleDao {
             include: [{
                 // association: Role.hasMany(Roles_Menus, {foreignKey: 'id', sourceKey: 'role_id', constraints: false}),
                 association: Role.belongsToMany(Menu, {through: Roles_Menus, foreignKey: 'role_id', constraints: false}),
-                required: false,
-                where: { ...global.enums.where }
             }, {
                 // association: Role.hasMany(Roles_Permissions, {foreignKey: 'id', sourceKey: 'role_id', constraints: false}),
                 association: Role.belongsToMany(Permission, {through: Roles_Permissions, foreignKey: 'role_id', constraints: false}),
-                required: false,
-                where: { ...global.enums.where }
             }, {
                 association: Role.belongsToMany(Dept, {through: Roles_Depts, foreignKey: 'role_id', constraints: false}),
-                required: false,
-                where: { ...global.enums.where }
-            }], where: { ...global.enums.where, ...where },
+            }], where: { ...global.enums.where_notdel, ...where },
             // order: [['id', 'DESC']],
             offset: ctx.limit*ctx.pagenum,
             limit: ctx.limit,
@@ -34,21 +28,12 @@ class RoleDao {
         return {results, count}
     }
 
-    /// 判断角色存在
-    static async role_exists(where) {
-        let count = await Role.count({
-            where: { ...where, ...global.enums.where }
-        })
-        return (count > 0)
-    }
-
     /// 编辑菜单权限
     static async menus_edit(id, menus) {
         // 查询当前的菜单权限
         let current_menus = (await Roles_Menus.findAll({
             where: {
                 role_id: id,
-                ...global.enums.where
             }
         })).map(d => d.toJSON()).map(d => d.menu_id)
         // 开始事务
@@ -81,7 +66,6 @@ class RoleDao {
         let current_permissions = (await Roles_Permissions.findAll({
             where: {
                 role_id: id,
-                ...global.enums.where
             }
         })).map(d => d.toJSON()).map(d => d.permission_id)
 
@@ -102,53 +86,67 @@ class RoleDao {
                 let d = current_permissions[i]
                 if (permissions.indexOf(d) === -1) {
                     // 删除资源权限
-                    // await Roles_Permissions.update({state: global.enums.state.del, update_at: new Date()}, {where: {role_id: id, permission_id: d}, transaction})
                     await Roles_Permissions.destroy({where: {role_id: id, permission_id: d}, transaction})
                 }
             }
         }, () => { throw new global.errs.DBError("数据库操作异常") })
     }
 
-    /// 验证部门
+    /// 判断角色存在
+    static async role_exists(where) {
+        let count = await Role.count({
+            where: { ...where, ...global.enums.where }
+        })
+        return (count > 0)
+    }
+
+    /// 获取角色
+    static async role_get(where) {
+        let role = await Role.findOne({
+            where: { ...where }
+        })
+        if (role) {
+            return role.toJSON()
+        }
+        
+        return null
+    }
+
+    /// 验证部门有效性
     static async validate_depts(depts) {
         let all_depts = (await CommonDao.depts()).map(d => d.id)
-        let cool = true
         depts.forEach(d => {
             if (all_depts.filter(d2 => d2 === d).length === 0) {
-                cool = false
-                return false
+                throw new global.errs.ParamsIllegal("请选择正确的部门")
             }
         })
-
-        return cool
     }
 
-    /// 验证菜单
+    /// 验证菜单有效性
     static async validate_menus(menus) {
         let all_menus = (await CommonDao.menus()).map(d => d.id)
-        let cool = true
         menus.forEach(d => {
             if (all_menus.filter(d2 => d2 === d).length === 0) {
-                cool = false
-                return false
+                throw new global.errs.ParamsIllegal("请选择正确的菜单")
             }
         })
-
-        return cool
     }
 
-    /// 验证权限
+    /// 验证权限有效性
     static async validate_permissions(permissions) {
         let all_permissions = (await CommonDao.permissions()).map(d => d.id)
-        let cool = true
         permissions.forEach(d => {
             if (all_permissions.filter(d2 => d2 === d).length === 0) {
-                cool = false
-                return false
+                throw new global.errs.ParamsIllegal("请选择正确的权限")
             }
         })
+    }
 
-        return cool
+    /// 验证角色是否可以删除
+    static async validate_role_del(id) {
+        // 判断是否存在可用用户
+        let result = await Users_Roles.findOne({ where: { role_id: id }})
+        if (result) { throw new global.errs.iError("无法删除该角色(存在绑定用户)") }
     }
 
     /// 编辑角色
@@ -157,7 +155,6 @@ class RoleDao {
         let current_depts = (await Roles_Depts.findAll({
             where: {
                 role_id: id,
-                ...global.enums.where
             }
         })).map(d => d.toJSON()).map(d => d.dept_id)
 
@@ -181,7 +178,6 @@ class RoleDao {
                 let d = current_depts[i]
                 if (depts.indexOf(d) === -1) {
                     // 删除部门权限
-                    // await Roles_Depts.update({state: global.enums.state.del, update_at: new Date()}, {where: {role_id: id, dept_id: d}, transaction})
                     await Roles_Depts.destroy({where: {role_id: id, dept_id: d}, transaction})
                 }
             }
@@ -212,6 +208,19 @@ class RoleDao {
             })
         }, () => { throw new global.errs.DBError("数据库操作异常") })
     }
+
+    /// 删除角色
+    static async role_del(id) {
+        await doTransaction(async function(transaction) {
+            // 删除角色绑定数据
+            await Roles_Depts.destroy({ where: {role_id: id}, transaction })
+            await Roles_Permissions.destroy({ where: {role_id: id}, transaction })
+            await Roles_Menus.destroy({ where: {role_id: id}, transaction })
+            // 删除角色
+            await Role.update({ state: global.enums.state.del, update_at: new Date() }, { where: {id: id}, transaction })
+        }, () => { throw new global.errs.DBError("数据库操作异常") })
+    }
+
 }
 
 export default RoleDao

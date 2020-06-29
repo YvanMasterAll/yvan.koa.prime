@@ -9,24 +9,19 @@ class WK_CommonDao {
         })).map(d => d.toJSON())
     }
 
-    /// 获取流程列表
+    /// 所有流程信息
     /// 流程基本信息 + 新建状态的显示字段 + 新建状态的流转Action
-    static async process_list(id) {
+    static async process_all(id) {
         if (!id) {
             return (await WK_Process.findAll({
                 include: [{
                     association: WK_Process.hasOne(WK_State, {foreignKey: 'process_id', sourceKey: 'id', constraints: false}),
-                    required: true,
                     include: [{
                         association: WK_State.hasMany(WK_Transition, {foreignKey: 'source_state', sourceKey: 'id', constraints: false}),
-                        required: true,
-                        where: { ...global.enums.where }
                     }],
-                    where: { ...global.enums.where, type: global.enums.wk.state_type.start }
+                    where: { type: global.enums.wk.state_type.start }
                 }, {
                     association: WK_Process.hasMany(WK_Field, {foreignKey: 'process_id', sourceKey: 'id', constraints: false}),
-                    required: true,
-                    where: { ...global.enums.where },
                 }], where: { ...global.enums.where }
             })).map(d => {
                 return d.toJSON()
@@ -35,17 +30,12 @@ class WK_CommonDao {
         let process = await WK_Process.findOne({
             include: [{
                 association: WK_Process.hasOne(WK_State, {foreignKey: 'process_id', sourceKey: 'id', constraints: false}),
-                required: true,
                 include: [{
                     association: WK_State.hasMany(WK_Transition, {foreignKey: 'source_state', sourceKey: 'id', constraints: false}),
-                    required: true,
-                    where: { ...global.enums.where }
                 }],
-                where: { ...global.enums.where, type: global.enums.wk.state_type.start }
+                where: { type: global.enums.wk.state_type.start }
             }, {
                 association: WK_Process.hasMany(WK_Field, {foreignKey: 'process_id', sourceKey: 'id', constraints: false}),
-                required: true,
-                where: { ...global.enums.where },
             }], where: { ...global.enums.where, id: id }
         })
         if (process) {

@@ -6,8 +6,10 @@ import * as dept from './dept'
 import * as job from './job'
 import * as wk_common from './workflow/wk_common'
 import * as ticket from './workflow/ticket'
+import * as sheet from './sheet/sheet'
 
 export default {
     auth, common, user, role, dept, job,
-    wk_common, ticket
+    wk_common, ticket,
+    sheet
 }

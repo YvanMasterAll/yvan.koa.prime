@@ -1,5 +1,5 @@
 import { User } from '../models'
-import { UserDao, CommonDao } from '../dao'
+import { UserDao, CommonDao, DeptDao, JobDao } from '../dao'
 const validator = require('validator')
 import utils from '../utils'
 const Sequelize = require('sequelize')
@@ -48,8 +48,14 @@ export const add = async (ctx, next) => {
     }
     if (!validator.isMobilePhone(phone, "zh-CN")) { throw new global.errs.ParamsIllegal("请输入合法的电话号码") }
     if (!validator.isEmail(email)) { throw new global.errs.ParamsIllegal("请输入合法的邮箱地址") }
-    await CommonDao.validate_dept(dept)
-    await CommonDao.validate_job(job, dept)
+    // 验证部门
+    if (!(await DeptDao.dept_exists({id: dept}))) {
+        throw new global.errs.ParamsIllegal("请选择正确的部门")
+    }
+    // 验证岗位
+    if (!(await JobDao.job_exists({id: job, dept_id: dept}))) {
+        throw new global.errs.ParamsIllegal("请选择正确的岗位")
+    }
     await UserDao.validate_roles(roleids, isadmin, level)
     // 开始事务
     await UserDao.user_add({name, password, state, phone, email, dept, job}, roleids)
@@ -82,8 +88,14 @@ export const edit = async (ctx, next) => {
     if (!validator.isMobilePhone(phone, "zh-CN")) { throw new global.errs.ParamsIllegal("请输入合法的电话号码") }
     if (!validator.isEmail(email)) { throw new global.errs.ParamsIllegal("请输入合法的邮箱地址") }
     await UserDao.validate_user(id, isadmin, ctx.state._user.scope, ctx.state._user.roleids)
-    await CommonDao.validate_dept(dept)
-    await CommonDao.validate_job(job, dept)
+    // 验证部门
+    if (!(await DeptDao.dept_exists({id: dept}))) {
+        throw new global.errs.ParamsIllegal("请选择正确的部门")
+    }
+    // 验证岗位
+    if (!(await JobDao.job_exists({id: job, dept_id: dept}))) {
+        throw new global.errs.ParamsIllegal("请选择正确的岗位")
+    }
     await UserDao.validate_roles(roleids, isadmin, level)
 
     // 开始事务
@@ -147,7 +159,7 @@ export const update_email = async (ctx, next) => {
     if (!validator.isEmail(email)) { throw new global.errs.ParamsIllegal("请输入合法的邮箱地址") }
     // 查找用户
     let user = (await User.findOne({
-        where: {id, password, ...global.enums.where},
+        where: {id, password},
         raw: true
     }))
     if (!user) {
@@ -177,7 +189,7 @@ export const update_password = async (ctx, next) => {
     if (validator.isEmpty(password, { ignore_whitespace: true })) { throw new global.errs.ParamsIllegal("请输入规范的密码") }
     // 查找用户
     let user = (await User.findOne({
-        where: {id, password: old, ...global.enums.where},
+        where: {id, password: old},
         raw: true
     }))
     if (!user) {

@@ -39,9 +39,9 @@ WK_Field.init(
         },
         type: {
             type: Sequelize.STRING,
-            defaultValue: 'string',
+            defaultValue: global.enums.wk.field_type.string,
             comment: '字段类型，string：字符串，int：整形，float：浮点型，bool：布尔，date：日期，radio：单选框，checkbox：多选框，select：下拉列表，text：文本域，richtext：富文本，user：用户, image：图片，attachment：附件',
-            validate: { isIn: [global.enums.wk._field_type] }
+            validate: { isIn: [global.enums.wk.field_types] }
         },
         choice: {
             type: Sequelize.JSON,
@@ -49,9 +49,9 @@ WK_Field.init(
         },
         state: {
             type: Sequelize.STRING,
-            defaultValue: 'on',
+            defaultValue: global.enums.state.on,
             comment: '状态',
-            validate: { isIn: [global.enums._state] }
+            validate: { isIn: [global.enums.state_arr] }
         }
     },
     {

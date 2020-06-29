@@ -35,19 +35,25 @@ WK_State.init(
         },
         type: {
             type: Sequelize.STRING,
-            defaultValue: 'normal',
+            defaultValue: global.enums.wk.state_type.normal,
             comment: '状态类型，normal：普通类型，start：.初始状态(新建工单)，end：结束状态(此状态下的工单不得再处理)',
-            validate: { isIn: [global.enums.wk._state_type] }
+            validate: { isIn: [global.enums.wk.state_types] }
         },
-        executor: {
-            type: Sequelize.INTEGER,
+        executors: {
+            type: Sequelize.ARRAY(Sequelize.INTEGER),
             comment: '当前的执行人，可以为空(无处理人的情况，如结束状态)'
         },
         executor_type: {
             type: Sequelize.STRING,
-            defaultValue: 'none',
-            comment: '当前的执行人类型，none：无处理人，personal：个人，dept：部门，role：角色，script：脚本',
-            validate: { isIn: [global.enums.wk._executor_type] }
+            defaultValue: global.enums.wk.executor_type.none,
+            comment: '当前的执行人类型，none：无处理人，personal：个人，multi：多人，dept：部门，role：角色，script：脚本',
+            validate: { isIn: [global.enums.wk.executor_types] }
+        },
+        distribute_type: {
+            type: Sequelize.STRING,
+            defaultValue: global.enums.wk.distribute_type.direct,
+            comment: '分发类型，direct：直接处理(每个执行人都可以处理工单并进入下一状态)，all：全部处理(只有当所有执行人处理完工单才能进入下一个状态)',
+            validate: { isIn: [global.enums.wk.distribute_types] }
         },
         fields: {
             type: Sequelize.JSON,
@@ -55,9 +61,9 @@ WK_State.init(
         },
         state: {
             type: Sequelize.STRING,
-            defaultValue: 'on',
+            defaultValue: global.enums.state.on,
             comment: '状态',
-            validate: { isIn: [global.enums._state] }
+            validate: { isIn: [global.enums.state_arr] }
         }
     },
     {

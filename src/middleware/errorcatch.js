@@ -1,6 +1,7 @@
 import { iError } from '../utils/errors'
 import { BaseError } from 'sequelize'
 import utils from '../utils'
+import redis from '../utils/redis'
 import { JsonWebTokenError } from 'jsonwebtoken'
 import { Log } from '../models'
 import { RedisDao } from '../dao'
@@ -34,7 +35,7 @@ export default function () {
             if (ctx.recache) { // 重置缓存, 当前还是在测试阶段
                 ctx.recache.forEach(key => { 
                     console.log('正在重置缓存: ' + key)
-                    RedisDao.timeline_reset(key)
+                    redis.del(key)
                 })
             }
         }).catch((err) => {

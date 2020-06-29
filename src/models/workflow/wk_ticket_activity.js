@@ -3,9 +3,9 @@ const { Sequelize, Model } = require('sequelize')
 
 /// 工单活动，工单流程产生的数据
 
-class Ticket_Activity extends Model {}
+class WK_Ticket_Activity extends Model {}
 
-Ticket_Activity.init(
+WK_Ticket_Activity.init(
     {
         id: {
             type: Sequelize.INTEGER,
@@ -43,28 +43,28 @@ Ticket_Activity.init(
         },
         executor_type: {
             type: Sequelize.STRING,
-            defaultValue: 'none',
-            comment: '当前的执行人类型，none：无处理人，personal：个人，dept：部门，role：角色，script：脚本',
-            validate: { isIn: [global.enums.wk._executor_type] }
+            defaultValue: global.enums.wk.executor_type.none,
+            comment: '当前的执行人类型，none：无处理人，personal：个人，multi：多人，dept：部门，role：角色，script：脚本',
+            validate: { isIn: [global.enums.wk.executor_types] }
         },
         intervene_type: {
             type: Sequelize.STRING,
-            defaultValue: 'none',
+            defaultValue: global.enums.wk.executor_type.none,
             comment: '干预类型，none：无干预，deliver：转交操作，add_node：加签操作，add_node_end：加签完毕，comment：评论操作',
-            validate: { isIn: [global.enums.wk._intervene_type] }
+            validate: { isIn: [global.enums.wk.intervene_types] }
         },
         state: {
             type: Sequelize.STRING,
-            defaultValue: 'on',
+            defaultValue: global.enums.state.on,
             comment: '状态',
-            validate: { isIn: [global.enums._state] }
+            validate: { isIn: [global.enums.state_arr] }
         }
     },
     {
         sequelize,
-        tableName: 'ticket_activity'
+        tableName: 'wk_ticket_activity'
     }
 )
 
-export default Ticket_Activity
+export default WK_Ticket_Activity
 

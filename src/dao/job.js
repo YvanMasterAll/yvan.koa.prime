@@ -9,7 +9,7 @@ class JobDao {
     /// 获取岗位列表
     static async job_list(where, ctx) {
         let result = await Job.findAndCountAll({
-            where: { ...global.enums.where, ...where },
+            where: { ...global.enums.where_notdel, ...where },
             order: ['sort'],
             offset: ctx.limit*ctx.pagenum,
             limit: ctx.limit
@@ -51,7 +51,7 @@ class JobDao {
         await Job.update({name, dept_id: dept, sort, update_at: new Date()}, {where: {id}})
     }
 
-    /// 编辑岗位
+    /// 删除岗位
     static async job_del(id) {
         // 删除岗位
         await Job.update({ state: global.enums.state.del, update_at: new Date() }, { where: {id: id} })
@@ -65,10 +65,10 @@ class JobDao {
         return (count > 0)
     }
 
-    /// 判断岗位删除
+    /// 判断岗位是否可以删除
     static async validate_job_del(id) {
         // 判断是否存在可用用户
-        let result = await User.findOne({ where: { job_id: id, ...global.enums._where }})
+        let result = await User.findOne({ where: { job_id: id, ...global.enums.where_notdel }})
         if (result) { throw new global.errs.iError("无法删除该岗位(存在可用用户)") }
     }
 }

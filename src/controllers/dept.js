@@ -26,8 +26,11 @@ export const add = async (ctx, next) => {
     // 参数验证
     if (!name || !pid) {  throw new global.errs.ParamsIllegal() }
     if (validator.isEmpty(name, { ignore_whitespace: true })) { throw new global.errs.ParamsIllegal() }
-    await CommonDao.validate_dept(pid)
     // 验证部门
+    if (!(await DeptDao.dept_exists({id: pid}))) {
+        throw new global.errs.ParamsIllegal("请选择正确的部门")
+    }
+    // 判断重名
     if (await DeptDao.dept_exists({pid, name})) {
         throw new global.errs.NotFound("部门已存在")
     }
@@ -48,12 +51,16 @@ export const edit = async (ctx, next) => {
     if (validator.isEmpty(name, { ignore_whitespace: true })) { throw new global.errs.ParamsIllegal() }
     let isRoot = await DeptDao.isRootDept(id)
     if ((isRoot && pid) || (!isRoot && !pid)) { throw new global.errs.ParamsIllegal() }
-    pid && await CommonDao.validate_dept(pid)
     // 验证部门
-    if (!(await DeptDao.dept_exists({id}))) {
+    if (pid && !(await DeptDao.dept_exists({id: pid}))) {
+        throw new global.errs.ParamsIllegal("请选择正确的部门")
+    }
+    let dept = await DeptDao.dept_get({id, ...global.enums.where_notdel})
+    if (!dept) {
         throw new global.errs.NotFound("要编辑的部门不存在")
     }
-    if (!isRoot && (await DeptDao.dept_exists({pid, name}))) {
+    // 判断重名
+    if (dept.name !== name && await DeptDao.dept_exists({pid, name})) {
         throw new global.errs.NotFound("已经存在同名的部门")
     }
     

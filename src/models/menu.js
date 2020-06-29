@@ -25,6 +25,12 @@ Menu.init(
             type: Sequelize.INTEGER, 
             comment: '上级菜单'
         },
+        menu_type: {
+            type: Sequelize.INTEGER,
+            comment: '菜单类型，0：根菜单，1：子菜单',
+            validate: { isIn: [[0, 1]] },
+            defaultValue: 1
+        },
         sort: {
             type: Sequelize.INTEGER,
             comment: '排序',
@@ -32,9 +38,9 @@ Menu.init(
         },
         state: {
             type: Sequelize.STRING,
-            defaultValue: 'on',
+            defaultValue: global.enums.state.on,
             comment: '状态',
-            validate: { isIn: [global.enums._state] }
+            validate: { isIn: [global.enums.state_arr] }
         }
     },
     {
