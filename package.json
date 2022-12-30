@@ -55,7 +55,7 @@
     "gulp-concat": "^2.6.1",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-terser": "^1.2.0",
-    "mocha": "^6.2.2",
+    "mocha": "^10.2.0",
     "nodemon": "^1.19.1",
     "supertest": "^4.0.2",
     "webpack": "4.16.5",
